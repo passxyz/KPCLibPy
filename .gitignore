@@ -18,7 +18,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+#lib/
 lib64/
 parts/
 sdist/
@@ -144,7 +144,7 @@ dmypy.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 
 # General binaries and Build results
-*.dll
+#*.dll
 *.exe
 *.pdb
 
@@ -186,7 +186,7 @@ UpgradeLog*.htm
 
 # Visual Studio Code
 .vscode/*
-!.vscode/settings.json
+#!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
