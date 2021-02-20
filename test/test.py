@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append("..")
 import kpclibpy
 
 from KeePassLib import PwDatabase, PwGroup 
@@ -20,7 +22,7 @@ class ShowWarningsLogger(IStatusLogger):
     def ContinueWork():
         return True
 
-test_db_path = os.environ['HOME']+'/github/passxyz/KPCLib/KPCLib.xunit/utdb.kdbx'
+test_db_path = 'utdb.kdbx'
 ioc = IOConnectionInfo.FromPath(test_db_path)
 TEST_DB_KEY = "12345"
 cmpKey = CompositeKey()
