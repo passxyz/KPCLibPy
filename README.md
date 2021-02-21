@@ -7,6 +7,16 @@ The orginal KeePass library is implemented in C# for .NET Framework. I modified 
 
 We can refer to this article [How to call a dynamic library][3] to use [KPCLib][5] in Python.
 
+To install the required packages, you can run the following command on Windows.
+
+`C:\> pip install -r requirements.txt`
+
+or, the following command on Linux.
+
+`$ pip3 install -r requirements.txt`
+
+On Windows 10, we have .NET runtime already. On Linux, we need to install .NET runtime and Mono. Below is my test environment on Linux. You can also use my docker image [docker-mono][8].
+
 ## Test environment
 - Ubuntu 18.04
 - [.NET 5.0][7]
@@ -74,3 +84,4 @@ $ dotnet publish
 [5]: https://github.com/passxyz/KPCLib
 [6]: https://github.com/pythonnet/pythonnet
 [7]: https://dotnet.microsoft.com/download/dotnet/5.0
+[8]: https://hub.docker.com/r/shugaoye/docker-mono

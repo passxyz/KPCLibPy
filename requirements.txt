@@ -1,0 +1,13 @@
+# Requirements for both Travis and AppVeyor
+#pytest
+#coverage
+#psutil
+
+# Coverage upload
+#codecov
+
+# Platform specific requirements
+wheel==0.36.2
+pycparser==2.20
+pythonnet==2.5.2
+python-nubia==0.2b5
