@@ -10,9 +10,30 @@
 import asyncio
 import socket
 import typing
+from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
+from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
+__keepass__ = KeePass()
+
+class ShowWarningsLogger(IStatusLogger):
+    __namespace__ = "KPCLibPyTest1"
+    
+    def StartLogging(self, strOperation, bWriteOperationToLog):
+        print('StartLogging {} {}'.format(strOperation, bWriteOperationToLog))
+        return
+    def EndLogging(self):
+        print('EndLogging')
+        return
+    def SetProgress(self, uPercent):
+        print('In progress {}'.format(uPercent))
+        return True
+    def SetText(self, strNewText, lsType):
+        print('SetText {} {}'.format(strNewText, lsType))
+        return True
+    def ContinueWork(self):
+        return True
 
 @command(aliases=["lookup"])
 @argument("hosts", description="Hostnames to resolve", aliases=["i"])
@@ -31,13 +52,18 @@ def lookup_hosts(hosts: typing.List[str], bad_name: int):
     return 0
 
 
-@command("good-name")
-def bad_name():
+@command("show")
+def show():
     """
-    This command has a bad function name, but we ask Nubia to register a nicer
-    name instead
+    This command will list the current available databases.
     """
-    cprint("Good Name!", "green")
+    #cprint(lsdb(), "green")
+    db = __keepass__._db
+
+    if __keepass__.is_open():
+        cprint("Database name: {}\nDescription: {}\nMaintenanceHistoryDays:{}".format(db.Name, db.Description, db.MaintenanceHistoryDays))
+    else:
+        cprint("Database is closed", "red")
 
 
 @command
@@ -50,24 +76,25 @@ async def triple(number):
     await asyncio.sleep(2)
 
 
-@command("be-blocked")
-def be_blocked():
+@command
+@argument("dbfile", description="Pick a data file", choices=lsdb())
+@argument("password", description="Please provide your password")
+def open(dbfile: str, password: str):
     """
-    This command is an example of command that blocked in configerator.
+    This command is used to connect a database.
     """
 
-    cprint("If you see me, something is wrong, Bzzz", "red")
-
+    logger = ShowWarningsLogger()
+    db_path = get_homepath() + '/' + dbfile
+    __keepass__.open(db_path, password, logger)
 
 @command
-@argument("style", description="Pick a style", choices=["test", "toast", "toad"])
-@argument("stuff", description="more colors", choices=["red", "green", "blue"])
-@argument("code", description="Color code", choices=[12, 13, 14])
-def pick(style: str, stuff: typing.List[str], code: int):
+def close():
     """
-    A style picking tool
+    Close the database
     """
-    cprint("Style is '{}' code is {}".format(style, code), "yellow")
+    __keepass__.close()
+    cprint("Database is closed")
 
 
 # instead of replacing _ we rely on camelcase to - super-command
