@@ -15,7 +15,6 @@ from termcolor import cprint
 from nubia import command, argument, context
 from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
-__keepass__ = KeePass()
 
 class ShowWarningsLogger(IStatusLogger):
     __namespace__ = "KPCLibPyTest1"
@@ -53,27 +52,39 @@ def lookup_hosts(hosts: typing.List[str], bad_name: int):
 
 
 @command("show")
-def show():
+@argument("items", type=str, description="Database configuration, version etc.",
+    choices=["configuration", "version", "database"])
+def show(items="database"):
     """
-    This command will list the current available databases.
+    This command shows the information of the current databases.
     """
-    #cprint(lsdb(), "green")
-    db = __keepass__._db
+    ctx = context.get_context()
+    db = ctx.keepass.db
 
-    if __keepass__.is_open():
-        cprint("Database name: {}\nDescription: {}\nMaintenanceHistoryDays:{}".format(db.Name, db.Description, db.MaintenanceHistoryDays))
+    if items == "database":
+        if ctx.keepass.is_open():
+            cprint("Database name: {}\nDefaultUserName {}\nDescription: {}\nMaintenanceHistoryDays:{}".format(db.Name, \
+                db.DefaultUserName,
+                db.Description, 
+                db.MaintenanceHistoryDays))
+        else:
+            cprint("Database is closed", "red")
+    elif items == "version":
+        cprint("Version 1.0.1")
+    elif items == "configuration":
+        cprint("Configuration")
     else:
-        cprint("Database is closed", "red")
+        cprint("Undefined item")
 
 
 @command
-@argument("number", type=int)
-async def triple(number):
-    "Calculates the triple of the input value"
-    cprint("Input is {}".format(number))
-    cprint("Type of input is {}".format(type(number)))
-    cprint("{} * 3 = {}".format(number, number * 3))
-    await asyncio.sleep(2)
+@argument("path", description="a specified path", positional=False)
+def ls(path=""):
+    "Lists entries or groups in pwd or in a specified path"
+    try:
+        cprint("Path is {}".format(path))
+    except TypeError:
+        return
 
 
 @command
@@ -84,46 +95,75 @@ def open(dbfile: str, password: str):
     This command is used to connect a database.
     """
 
-    logger = ShowWarningsLogger()
-    db_path = get_homepath() + '/' + dbfile
-    __keepass__.open(db_path, password, logger)
+    ctx = context.get_context()
+    db = ctx.keepass.db
+
+    if ctx.keepass.is_open():
+        cprint("Database name: {}\nDescription: {}\nMaintenanceHistoryDays:{}"
+            .format(db.Name, db.Description, db.MaintenanceHistoryDays))
+    else:
+        logger = ShowWarningsLogger()
+        db_path = get_homepath() + '/' + dbfile
+        ctx.keepass.open(db_path, password, logger)
+
 
 @command
 def close():
     """
     Close the database
     """
-    __keepass__.close()
+    ctx = context.get_context()
+    ctx.keepass.close()
     cprint("Database is closed")
 
+@command
+def clear():
+    '''
+    Clears console.
+    '''
+    print("\033c")
 
 # instead of replacing _ we rely on camelcase to - super-command
 
 
 @command
-class SuperCommand:
-    "This is a super command"
+class Configure:
+    "KeePass Database configuration"
 
-    def __init__(self, shared: int = 0) -> None:
-        self._shared = shared
+    def __init__(self) -> None:
+        ctx = context.get_context()
+        self._pwdb = ctx.keepass.db
+        if not self._pwdb:
+            cprint("Please connect to a database first.", "red")
 
     @property
-    def shared(self) -> int:
-        return self._shared
+    def pwdb(self):
+        return self._pwdb
 
     """This is the super command help"""
 
-    @command
-    @argument("firstname", positional=True)
-    def print_name(self, firstname: str):
+    @command("name")
+    @argument("db_name", positional=False)
+    def db_name(self, db_name=""):
         """
-        print a name
+        show or change the database name
         """
-        cprint("My name is: {}".format(firstname))
+        if self.pwdb:
+            if db_name:
+                self.pwdb.Name = db_name
+                cprint("Updated database name to {}".format(self.pwdb.Name))
+            else:
+                cprint("Database name: {}".format(self.pwdb.Name))
 
-    @command(aliases=["do"])
-    def do_stuff(self, stuff: int):
+    @command
+    @argument("username", positional=False)
+    def default_user_name(self, username=""):
         """
-        doing stuff
+        show or change the default username
         """
-        cprint("stuff={}, shared={}".format(stuff, self.shared))
+        if self.pwdb:
+            if username:
+                self.pwdb.DefaultUserName = username
+                cprint("Updated default username to {}".format(self.pwdb.DefaultUserName))
+            else:
+                cprint("Database name: {}".format(self.pwdb.DefaultUserName))

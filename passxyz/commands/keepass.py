@@ -5,7 +5,7 @@ import kpclibpy
 
 from KeePassLib import PwDatabase, PwGroup 
 from KeePassLib.Serialization import IOConnectionInfo
-from KeePassLib.Keys import CompositeKey, KcpPassword
+from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Interfaces import IStatusLogger
 
 
@@ -27,16 +27,29 @@ class KeePass:
                 ).__new__(cls, *args, **kwargs)
         return cls._keepass
     
-    def is_open(self):
-        if not self._db:
-            return False
+    @property
+    def db(self):
+        """
+        ReadOnly property to represent a KeePass database instance (PwDatabase)
+        """
+        if self._db:
+            return self._db
         else:
+            return None
+
+    def is_open(self):
+        if self.db:
             return True
+        else:
+            return False
 
     def close(self):
-        if self._db.IsOpen:
-            self._db.Close()
-            self._db = None
+        if self._db:
+            if self._db.IsOpen:
+                self._db.Close()
+                self._db = None
+        else:
+            print("Database connection is not established yet.")
 
     def open(self, db_path, password, logger):
         ioc = IOConnectionInfo.FromPath(db_path)
@@ -44,6 +57,13 @@ class KeePass:
         cmpKey.AddUserKey(KcpPassword(password))
 
         self._db = PwDatabase()
-        #swLogger = StatusLogger()
-        self._db.Open(ioc, cmpKey, logger)
+
+        try:
+            if not self._db.IsOpen:
+                self._db.Open(ioc, cmpKey, logger)
+        except InvalidCompositeKeyException:
+            self.close()
+            print("The composite key is invalid!")
+            return
+
 
