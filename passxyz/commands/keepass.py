@@ -33,8 +33,8 @@ class KeePass:
     def __init__(self):
         self._db = None
         self._current_group = None
-        self._groups = None
-        self._entries = None
+        self._groups = []
+        self._entries = []
 
     @property
     def db(self):
@@ -56,7 +56,6 @@ class KeePass:
         Groups in current working directory (group)
         """
         if self.current_group:
-            self._groups = self.current_group.Groups
             return self._groups
         else:
             return None
@@ -67,7 +66,6 @@ class KeePass:
         Entries in current working directory (group)
         """
         if self.current_group:
-            self._entries = self.current_group.Entries
             return self._entries
         else:
             return None
@@ -97,6 +95,10 @@ class KeePass:
             if not self._db.IsOpen:
                 self._db.Open(ioc, cmpKey, logger)
                 self._current_group = self._db.RootGroup
+                for gp in self._db.RootGroup.Groups:
+                    self._groups.append(gp.get_Name())
+                for entry in self._db.RootGroup.Entries:
+                    self._entries.append(entry.Strings.ReadSafe("Title"))
         except InvalidCompositeKeyException:
             self.close()
             print("The composite key is invalid!")

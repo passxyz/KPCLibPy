@@ -24,8 +24,8 @@ def ls(path=""):
         print(ctx.keepass.entries)
     #    for g in ctx.keepass.current_group.Groups
     #        print("{}".format(g))
-        #for e in ctx.keepass.entries
-        #    print("{}".format(e))
+        for entry in ctx.keepass.entries
+            print("{}".format(entry))
 
 
 @command
