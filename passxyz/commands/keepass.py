@@ -3,7 +3,7 @@ from os import listdir
 from os.path import isfile, join
 import kpclibpy
 
-from KeePassLib import PwDatabase, PwGroup 
+from KeePassLib import PwDatabase, PwGroup, PwEntry, Collections
 from KeePassLib.Serialization import IOConnectionInfo
 from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Interfaces import IStatusLogger
@@ -19,21 +19,56 @@ def lsdb():
 
 
 class KeePass:
+    """
+    Python interface of KeePassLib
+    """
     _keepass = None
-    _db = None
+
     def __new__(cls, *args, **kwargs):
         if not cls._keepass:
             cls._keepass = super(KeePass, cls
                 ).__new__(cls, *args, **kwargs)
         return cls._keepass
     
+    def __init__(self):
+        self._db = None
+        self._current_group = None
+        self._groups = None
+        self._entries = None
+
     @property
     def db(self):
         """
         ReadOnly property to represent a KeePass database instance (PwDatabase)
         """
-        if self._db:
-            return self._db
+        return self._db
+
+    @property
+    def current_group(self):
+        """
+        Current working directory (group)
+        """
+        return self._current_group
+
+    @property
+    def groups(self):
+        """
+        Groups in current working directory (group)
+        """
+        if self.current_group:
+            self._groups = self.current_group.Groups
+            return self._groups
+        else:
+            return None
+
+    @property
+    def entries(self):
+        """
+        Entries in current working directory (group)
+        """
+        if self.current_group:
+            self._entries = self.current_group.Entries
+            return self._entries
         else:
             return None
 
@@ -61,6 +96,7 @@ class KeePass:
         try:
             if not self._db.IsOpen:
                 self._db.Open(ioc, cmpKey, logger)
+                self._current_group = self._db.RootGroup
         except InvalidCompositeKeyException:
             self.close()
             print("The composite key is invalid!")

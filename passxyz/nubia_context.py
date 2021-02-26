@@ -15,6 +15,11 @@ from commands.keepass import KeePass
 _keepass = KeePass()
 
 class NubiaExampleContext(context.Context):
+    def __init__(self, *args, **kwargs):
+        self.keepass = _keepass
+        self.version = "1.0.2"
+        super().__init__()
+
     def on_connected(self, *args, **kwargs):
         pass
 
@@ -22,11 +27,9 @@ class NubiaExampleContext(context.Context):
         # dispatch the on connected message
         self.verbose = args.verbose
         self.registry.dispatch_message(eventbus.Message.CONNECTED)
-        self.keepass = _keepass
 
     def on_interactive(self, args):
         self.verbose = args.verbose
-        self.keepass = _keepass
         ret = self._registry.find_command("connect").run_cli(args)
         if ret:
             raise exceptions.CommandError("Failed starting interactive mode")

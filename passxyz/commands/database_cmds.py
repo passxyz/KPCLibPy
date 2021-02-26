@@ -7,13 +7,12 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import asyncio
-import socket
 import typing
 from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
 from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
+from KeePassLib import PwGroup, PwEntry, Collections
 
 
 class ShowWarningsLogger(IStatusLogger):
@@ -34,21 +33,50 @@ class ShowWarningsLogger(IStatusLogger):
     def ContinueWork(self):
         return True
 
-@command(aliases=["lookup"])
-@argument("hosts", description="Hostnames to resolve", aliases=["i"])
-@argument("bad_name", name="nice", description="testing")
-def lookup_hosts(hosts: typing.List[str], bad_name: int):
+
+@command
+def edit():
+    "Edit an etnry or group"
+    return None
+
+@command("export")
+def export_db():
+    "Export entries to a new database"
+    return None
+
+@command("import")
+def import_db():
+    "Import another database to the current one"
+    return None
+
+@command
+def mv():
+    "Move an entry or group to a new location"
+    return None
+
+
+@command
+def rename():
+    "Rename a group or entry"
+    return None
+
+
+@command
+def version():
+    "Display version number"
+    ctx = context.get_context()
+    cprint("Version {}".format(ctx.version))
+
+
+@command
+def save():
     """
-    This will lookup the hostnames and print the corresponding IP addresses
+    Save te database to disk
     """
     ctx = context.get_context()
-    cprint("Input: {}".format(hosts), "yellow")
+    db = ctx.keepass.db
+    cprint("Name: {}".format(db.Name), "yellow")
     cprint("Verbose? {}".format(ctx.verbose), "yellow")
-    for host in hosts:
-        cprint("{} is {}".format(host, socket.gethostbyname(host)))
-
-    # optional, by default it's 0
-    return 0
 
 
 @command("show")
@@ -70,21 +98,11 @@ def show(items="database"):
         else:
             cprint("Database is closed", "red")
     elif items == "version":
-        cprint("Version 1.0.1")
+        cprint("Version {}".format(ctx.version))
     elif items == "configuration":
         cprint("Configuration")
     else:
         cprint("Undefined item")
-
-
-@command
-@argument("path", description="a specified path", positional=False)
-def ls(path=""):
-    "Lists entries or groups in pwd or in a specified path"
-    try:
-        cprint("Path is {}".format(path))
-    except TypeError:
-        return
 
 
 @command
