@@ -17,7 +17,7 @@ _keepass = KeePass()
 class NubiaExampleContext(context.Context):
     def __init__(self, *args, **kwargs):
         self.keepass = _keepass
-        self.version = "1.0.2"
+        self.version = "1.0.3"
         super().__init__()
 
     def on_connected(self, *args, **kwargs):

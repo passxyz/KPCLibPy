@@ -12,7 +12,7 @@ from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
 from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
-from KeePassLib import PwGroup, PwEntry, Collections
+#from KeePassLib import PwGroup, PwEntry, Collections
 
 
 @command
@@ -20,18 +20,20 @@ from KeePassLib import PwGroup, PwEntry, Collections
 def ls(path=""):
     "Lists entries or groups in pwd or in a specified path"
     ctx = context.get_context()
-    if ctx.keepass.is_open:
-        print(ctx.keepass.entries)
-    #    for g in ctx.keepass.current_group.Groups
-    #        print("{}".format(g))
-        for entry in ctx.keepass.entries
+    if ctx.keepass.is_open():
+        entries =  ctx.keepass.entries
+        for group in ctx.keepass.groups:
+            print("{}/".format(group))
+        for entry in entries:
             print("{}".format(entry))
 
 
 @command
 def pwd():
     "Print the current working directory"
-    return None
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        print(ctx.keepass.current_group.get_Name())
 
 
 @command
