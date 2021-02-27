@@ -1,6 +1,7 @@
 from pathlib import *
 from os import listdir
 from os.path import isfile, join
+from termcolor import cprint
 import kpclibpy
 
 from KeePassLib import PwDatabase, PwGroup, PwEntry, Collections
@@ -11,6 +12,7 @@ from KeePassLib.Interfaces import IStatusLogger
 
 def get_homepath():
     return str(Path.home())+'/.kpclibdb'
+
 
 def lsdb():
     home_path = get_homepath()
@@ -42,21 +44,37 @@ class KeePass:
         return self._db
 
     @property
+    def  root_group(self):
+        """
+        Root group of the current database
+        """
+        return self._db.RootGroup
+
+    @property
     def current_group(self):
         """
-        Current working directory (group)
+        Getter of the current working directory (group)
         """
         return self._current_group
+
+    @current_group.setter
+    def current_group(self, group):
+        """
+        Setter of the current working directory (group)
+        """
+        self._current_group = group
 
     @property
     def groups(self):
         """
-        Groups in current working directory (group)
+        A dictionary of groups in current working directory (group)
+        Key   - group name
+        Value - PwGroup
         """
         if self.current_group:
-            groups = []
-            for gp in self._db.RootGroup.Groups:
-                groups.append(gp.get_Name())
+            groups = {}
+            for gp in self.current_group.Groups:
+                groups[gp.get_Name()] = gp
             return groups
         else:
             return None
@@ -64,15 +82,22 @@ class KeePass:
     @property
     def entries(self):
         """
-        Entries in current working directory (group)
+        A dictionary of entries in current working directory (group)
+        Key   - entry title
+        Value -  PwEntry
         """
         if self.current_group:
-            entries = []
-            for entry in self._db.RootGroup.Entries:
-                entries.append(entry.Strings.ReadSafe("Title"))
+            entries = {}
+            for entry in self.current_group.Entries:
+                entries[entry.Strings.ReadSafe("Title")] = entry
             return entries
         else:
             return None
+
+    def print_entry(self,  entry):
+        for x in entry.Strings:
+            cprint("{}:".format(x.Key), "yellow")
+            cprint("\t{}\n".format(entry.Strings.ReadSafe(x.Key)))
 
     def is_open(self):
         if self.db:
@@ -103,5 +128,4 @@ class KeePass:
             self.close()
             print("The composite key is invalid!")
             return
-
 

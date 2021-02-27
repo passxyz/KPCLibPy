@@ -11,8 +11,8 @@ import typing
 from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
-from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
-from KeePassLib import PwGroup, PwEntry, Collections
+from commands.keepass import IStatusLogger, get_homepath, lsdb
+#from KeePassLib import PwGroup, PwEntry, Collections
 
 
 class ShowWarningsLogger(IStatusLogger):
@@ -25,7 +25,7 @@ class ShowWarningsLogger(IStatusLogger):
         print('EndLogging')
         return
     def SetProgress(self, uPercent):
-        print('In progress {}'.format(uPercent))
+        #print('In progress {}'.format(uPercent))
         return True
     def SetText(self, strNewText, lsType):
         print('SetText {} {}'.format(strNewText, lsType))

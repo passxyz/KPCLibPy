@@ -11,8 +11,7 @@ import typing
 from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
-from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
-#from KeePassLib import PwGroup, PwEntry, Collections
+#from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
 
 @command
@@ -21,10 +20,9 @@ def ls(path=""):
     "Lists entries or groups in pwd or in a specified path"
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        entries =  ctx.keepass.entries
         for group in ctx.keepass.groups:
             print("{}/".format(group))
-        for entry in entries:
+        for entry in ctx.keepass.entries:
             print("{}".format(entry))
 
 
@@ -37,9 +35,22 @@ def pwd():
 
 
 @command
-def cd():
-    "Change directory (group)"
-    return None
+@argument("path", description="enter a path", positional=True)
+def cd(path: str):
+    """
+    Change directory (group), '/' - root, '..' - parent
+    """
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        try:
+            if path == '/':
+                ctx.keepass.current_group = ctx.keepass.root_group
+            elif path == '..':
+                ctx.keepass.current_group = ctx.keepass.current_group.ParentGroup
+            elif ctx.keepass.groups[path]:
+                ctx.keepass.current_group = ctx.keepass.groups[path]
+        except KeyError:
+            cprint("Cannnot find {}".format(path), "red")
 
 
 @command
