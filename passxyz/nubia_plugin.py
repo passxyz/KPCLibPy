@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Roger Ye.
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
@@ -8,13 +8,13 @@
 #
 
 import argparse
-from nubia_context import NubiaExampleContext
-from nubia_statusbar import NubiaExampleStatusBar
+from nubia_context import NubiaPassXYZContext
+from nubia_statusbar import NubiaPassXYZStatusBar
 from nubia import PluginInterface, CompletionDataSource
 from nubia.internal.blackcmd import CommandBlacklist
 
 
-class NubiaExamplePlugin(PluginInterface):
+class NubiaPassXYZPlugin(PluginInterface):
     """
     The PluginInterface class is a way to customize nubia for every customer
     use case. It allowes custom argument validation, control over command
@@ -27,7 +27,7 @@ class NubiaExamplePlugin(PluginInterface):
         The plugin can return a custom context but it has to inherit from the
         correct parent class.
         """
-        return NubiaExampleContext()
+        return NubiaPassXYZContext()
 
     def validate_args(self, args):
         """
@@ -86,7 +86,7 @@ class NubiaExamplePlugin(PluginInterface):
         This returns the StatusBar object that handles the bottom status bar
         and the right-side per-line status
         """
-        return NubiaExampleStatusBar(context)
+        return NubiaPassXYZStatusBar(context)
 
     def getBlacklistPlugin(self):
         blacklister = CommandBlacklist()

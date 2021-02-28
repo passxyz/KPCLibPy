@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Roger Ye.
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
@@ -13,7 +13,7 @@ from nubia import context
 from nubia import statusbar
 
 
-class NubiaExampleStatusBar(statusbar.StatusBar):
+class NubiaPassXYZStatusBar(statusbar.StatusBar):
     def __init__(self, context):
         self._last_status = None
 

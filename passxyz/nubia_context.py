@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Roger Ye.
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
@@ -14,10 +14,10 @@ from commands.keepass import KeePass
 
 _keepass = KeePass()
 
-class NubiaExampleContext(context.Context):
+class NubiaPassXYZContext(context.Context):
     def __init__(self, *args, **kwargs):
         self.keepass = _keepass
-        self.version = "1.0.4"
+        self.version = "1.0.5"
         super().__init__()
 
     def on_connected(self, *args, **kwargs):

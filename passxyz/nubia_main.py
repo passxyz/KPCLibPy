@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Roger Ye.
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
@@ -11,11 +11,11 @@ import sys
 
 import commands
 from nubia import Nubia, Options
-from nubia_plugin import NubiaExamplePlugin
+from nubia_plugin import NubiaPassXYZPlugin
 
 
 if __name__ == "__main__":
-    plugin = NubiaExamplePlugin()
+    plugin = NubiaPassXYZPlugin()
     shell = Nubia(
         name="nubia_passxyz",
         command_pkgs=commands,
