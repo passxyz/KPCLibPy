@@ -100,6 +100,7 @@ def show(items="database"):
             db_table.add_row([colored("Database name", "magenta"), db.Name])
             db_table.add_row([colored("DefaultUserName", "magenta"), db.DefaultUserName])
             db_table.add_row([colored("Modified", "magenta"), db.Modified])
+            db_table.add_row([colored("Hide password", "magenta"), ctx.keepass.is_hidden])
             db_table.add_row([colored("RecycleBinEnabled", "magenta"), db.RecycleBinEnabled])
             db_table.add_row([colored("HistoryMaxItems", "magenta"), db.HistoryMaxItems])
             db_table.add_row([colored("HistoryMaxSize", "magenta"), db.HistoryMaxSize])
@@ -162,6 +163,7 @@ class Configure:
 
     def __init__(self) -> None:
         ctx = context.get_context()
+        self.keepass = ctx.keepass
         self._pwdb = ctx.keepass.db
         if not self._pwdb:
             cprint("Please connect to a database first.", "red")
@@ -199,3 +201,12 @@ class Configure:
                 cprint("Updated default username to {}".format(self.pwdb.DefaultUserName))
             else:
                 cprint("Database name: {}".format(self.pwdb.DefaultUserName))
+
+    @command
+    @argument("is_hidden", positional=False)
+    def password(self, is_hidden=False):
+        """
+        show or hide password
+        """
+        if self.keepass:
+            self.keepass.is_hidden = is_hidden

@@ -10,7 +10,8 @@
 from pathlib import *
 from os import listdir
 from os.path import isfile, join
-from termcolor import cprint
+from prettytable import PrettyTable
+from termcolor import cprint, colored
 import kpclibpy
 
 from KeePassLib import PwDatabase, PwGroup, PwEntry, Collections
@@ -44,6 +45,8 @@ class KeePass:
     def __init__(self):
         self._db = None
         self._current_group = None
+        self._db_type = "KeePass"
+        self.is_hidden = True
 
     @property
     def db(self):
@@ -51,6 +54,24 @@ class KeePass:
         ReadOnly property to represent a KeePass database instance (PwDatabase)
         """
         return self._db
+
+    @property
+    def db_type(self):
+        """
+        Getter of database type
+        The database type can be KeePass or PassXYZ
+        """
+        return self._db_type
+
+    @db_type.setter
+    def db_type(self, db_t):
+        """
+        Setter of database type
+        """
+        if db_t == "KeePass" or db_t == "PassXYZ":
+            self._db_type = db_t
+        else:
+            print("Unsupported database type")
 
     @property
     def  root_group(self):
@@ -103,10 +124,21 @@ class KeePass:
         else:
             return None
 
+    def get_value(self, entry, key):
+        if(entry.Strings.GetSafe(key).IsProtected):
+            if self.is_hidden:
+                return "*******"
+        return entry.Strings.ReadSafe(key)
+
     def print_entry(self,  entry):
+        en_table = PrettyTable(["Key", "Value"])
+        en_table.align = "l"
+
         for x in entry.Strings:
-            cprint("{}:".format(x.Key), "yellow")
-            cprint("\t{}\n".format(entry.Strings.ReadSafe(x.Key)))
+            en_table.add_row([colored(x.Key, "yellow"), self.get_value(entry, x.Key)])
+            #cprint("{}:".format(x.Key), "yellow")
+            #cprint("\t{}\n".format(self.get_value(entry, x.Key)))
+        print(en_table)
 
     def is_open(self):
         if self.db:

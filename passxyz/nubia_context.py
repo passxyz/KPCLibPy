@@ -17,8 +17,29 @@ _keepass = KeePass()
 class NubiaPassXYZContext(context.Context):
     def __init__(self, *args, **kwargs):
         self.keepass = _keepass
-        self.version = "1.0.5"
+        self.version = "1.0.6"
+        self._current_group = None
         super().__init__()
+
+    @property
+    def db_type(self):
+        """
+        Getter of database type
+        The database type can be KeePass or PassXYZ
+        """
+        return self.keepass.db_type
+
+    @property
+    def current_group(self):
+        """
+        Getter of the current working directory (group)
+        """
+        if self.keepass.current_group:
+            self._current_group = self.keepass.current_group.Name
+        else:
+            self._current_group = "Offline"
+            
+        return self._current_group
 
     def on_connected(self, *args, **kwargs):
         pass

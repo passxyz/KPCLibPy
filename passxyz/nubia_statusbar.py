@@ -27,14 +27,19 @@ class NubiaPassXYZStatusBar(statusbar.StatusBar):
 
     def get_tokens(self):
         spacer = (Token.Spacer, "  ")
-        if context.get_context().verbose:
-            is_verbose = (Token.Warn, "ON")
+        if context.get_context().keepass.is_hidden:
+            is_verbose = (Token.Warn, "Hidden")
         else:
-            is_verbose = (Token.Info, "OFF")
+            is_verbose = (Token.Info, "Show")
+
         return [
-            (Token.Toolbar, "PassXYZ"),
+            (Token.Info, context.get_context().db_type),
             spacer,
-            (Token.Toolbar, "Verbose "),
+            (Token.Toolbar, "Password"),
             spacer,
             is_verbose,
+            spacer,
+            (Token.Toolbar, "Status"),
+            spacer,
+            (Token.Info, context.get_context().current_group),
         ]
