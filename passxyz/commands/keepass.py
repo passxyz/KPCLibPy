@@ -101,7 +101,10 @@ class KeePass:
 
     def is_open(self):
         if self.db:
-            return True
+            if self.db.IsOpen:
+                return True
+            else:
+                return False
         else:
             return False
 

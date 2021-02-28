@@ -9,7 +9,8 @@
 
 import typing
 from pathlib import *
-from termcolor import cprint
+from prettytable import PrettyTable
+from termcolor import cprint, colored
 from nubia import command, argument, context
 from commands.keepass import IStatusLogger, get_homepath, lsdb
 #from KeePassLib import PwGroup, PwEntry, Collections
@@ -75,8 +76,10 @@ def save():
     """
     ctx = context.get_context()
     db = ctx.keepass.db
-    cprint("Name: {}".format(db.Name), "yellow")
-    cprint("Verbose? {}".format(ctx.verbose), "yellow")
+
+    if ctx.keepass.is_open():
+        logger = ShowWarningsLogger()
+        db.Save(logger)
 
 
 @command("show")
@@ -91,10 +94,19 @@ def show(items="database"):
 
     if items == "database":
         if ctx.keepass.is_open():
-            cprint("Database name: {}\nDefaultUserName {}\nDescription: {}\nMaintenanceHistoryDays:{}".format(db.Name, \
-                db.DefaultUserName,
-                db.Description, 
-                db.MaintenanceHistoryDays))
+            db_table = PrettyTable(["Property", "Value"])
+            db_table.align = "l"
+
+            db_table.add_row([colored("Database name", "magenta"), db.Name])
+            db_table.add_row([colored("DefaultUserName", "magenta"), db.DefaultUserName])
+            db_table.add_row([colored("Modified", "magenta"), db.Modified])
+            db_table.add_row([colored("RecycleBinEnabled", "magenta"), db.RecycleBinEnabled])
+            db_table.add_row([colored("HistoryMaxItems", "magenta"), db.HistoryMaxItems])
+            db_table.add_row([colored("HistoryMaxSize", "magenta"), db.HistoryMaxSize])
+            db_table.add_row([colored("Description", "magenta"), db.Description])
+            db_table.add_row([colored("MaintenanceHistoryDays", "magenta"), db.MaintenanceHistoryDays])
+            cprint("Database configureation", "yellow")
+            print(db_table)
         else:
             cprint("Database is closed", "red")
     elif items == "version":
@@ -169,6 +181,7 @@ class Configure:
         if self.pwdb:
             if db_name:
                 self.pwdb.Name = db_name
+                self.pwdb.Modified = True
                 cprint("Updated database name to {}".format(self.pwdb.Name))
             else:
                 cprint("Database name: {}".format(self.pwdb.Name))
@@ -182,6 +195,7 @@ class Configure:
         if self.pwdb:
             if username:
                 self.pwdb.DefaultUserName = username
+                self.pwdb.Modified = True
                 cprint("Updated default username to {}".format(self.pwdb.DefaultUserName))
             else:
                 cprint("Database name: {}".format(self.pwdb.DefaultUserName))
