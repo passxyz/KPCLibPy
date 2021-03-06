@@ -8,7 +8,7 @@
 #
 
 import typing
-from pathlib import *
+#from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
 #from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb

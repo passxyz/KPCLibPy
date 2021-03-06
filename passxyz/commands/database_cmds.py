@@ -15,8 +15,8 @@ from commands.keepass import IStatusLogger, get_homepath, lsdb
 #from KeePassLib import PwGroup, PwEntry, Collections
 
 
-class ShowWarningsLogger(IStatusLogger):
-    __namespace__ = "KPCLibPyTest1"
+class KPCLibPyLogger(IStatusLogger):
+    __namespace__ = "KPCLibPyLogger"
     
     def StartLogging(self, strOperation, bWriteOperationToLog):
         print('StartLogging {} {}'.format(strOperation, bWriteOperationToLog))
@@ -66,6 +66,7 @@ def version():
     "Display version number"
     ctx = context.get_context()
     cprint("Version {}".format(ctx.version))
+    return ctx.version
 
 
 @command
@@ -77,7 +78,7 @@ def save():
     db = ctx.keepass.db
 
     if ctx.keepass.is_open():
-        logger = ShowWarningsLogger()
+        logger = KPCLibPyLogger()
         db.Save(logger)
 
 
@@ -132,7 +133,7 @@ def open(dbfile: str, password: str):
         cprint("Database name: {}\nDescription: {}\nMaintenanceHistoryDays:{}"
             .format(db.Name, db.Description, db.MaintenanceHistoryDays))
     else:
-        logger = ShowWarningsLogger()
+        logger = KPCLibPyLogger()
         db_path = get_homepath() + '/' + dbfile
         ctx.keepass.open(db_path, password, logger)
 
