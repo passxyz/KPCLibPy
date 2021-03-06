@@ -8,7 +8,6 @@
 #
 
 import typing
-from pathlib import *
 from prettytable import PrettyTable
 from termcolor import cprint, colored
 from nubia import command, argument, context
@@ -203,10 +202,12 @@ class Configure:
                 cprint("Database name: {}".format(self.pwdb.DefaultUserName))
 
     @command
-    @argument("is_hidden", positional=False)
-    def password(self, is_hidden=False):
+    def toggle(self):
         """
-        show or hide password
+        Toggle show or hide password
         """
         if self.keepass:
-            self.keepass.is_hidden = is_hidden
+            if self.keepass.is_hidden:
+                self.keepass.is_hidden = False
+            else:
+                self.keepass.is_hidden = True

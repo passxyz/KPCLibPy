@@ -8,13 +8,19 @@
 #
 
 import sys
+import os
 
 import commands
 from nubia import Nubia, Options
 from nubia_plugin import NubiaPassXYZPlugin
+from commands.keepass import get_homepath
 
 
 if __name__ == "__main__":
+    homepath = get_homepath()
+    if not os.path.exists(homepath):
+        os.mkdir(homepath)
+
     plugin = NubiaPassXYZPlugin()
     shell = Nubia(
         name="nubia_passxyz",
