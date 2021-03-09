@@ -30,6 +30,9 @@ class PxShell(Nubia):
         px_plugin = NubiaPassXYZPlugin()
         super(PxShell, self).__init__(name, plugin=px_plugin, command_pkgs=commands, testing=True)
         self.registry = self._registry
+        self.ut_db = "utdb.kdbx"
+        self.ut_password = "12345"
+
 
     def run_cli_line(self, raw_line):
         cli_args_list = raw_line.split()
@@ -53,6 +56,6 @@ def pxshell():
 @pytest.fixture()
 def keepass_db():
     global shell
-    shell.run_interactive_line('open dbfile=utdb.kdbx password="12345"')
+    shell.run_interactive_line('open dbfile={} password={}'.format(shell.ut_db, shell.ut_password))
     yield
     shell.run_interactive_line('close')
