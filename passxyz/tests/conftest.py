@@ -48,14 +48,13 @@ class PxShell(Nubia):
 
 shell = PxShell()
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def pxshell():
     global shell
     return shell
 
 @pytest.fixture()
-def keepass_db():
-    global shell
-    shell.run_interactive_line('open dbfile={} password={}'.format(shell.ut_db, shell.ut_password))
+def keepass_db(pxshell):
+    pxshell.run_interactive_line('open dbfile={} password={}'.format(shell.ut_db, shell.ut_password))
     yield
-    shell.run_interactive_line('close')
+    pxshell.run_interactive_line('close')

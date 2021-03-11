@@ -14,10 +14,11 @@ from prettytable import PrettyTable
 from termcolor import cprint, colored
 import kpclibpy
 
-from KeePassLib import PwDatabase, PwGroup, PwEntry, Collections
+from KeePassLib import PwGroup, PwEntry, Collections
 from KeePassLib.Serialization import IOConnectionInfo
 from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Interfaces import IStatusLogger
+from PassXYZLib import PxDatabase
 
 
 def get_homepath():
@@ -51,7 +52,7 @@ class KeePass:
     @property
     def db(self):
         """
-        ReadOnly property to represent a KeePass database instance (PwDatabase)
+        ReadOnly property to represent a KeePass database instance (PxDatabase)
         """
         return self._db
 
@@ -162,7 +163,7 @@ class KeePass:
         cmpKey = CompositeKey()
         cmpKey.AddUserKey(KcpPassword(password))
 
-        self._db = PwDatabase()
+        self._db = PxDatabase()
 
         try:
             if not self._db.IsOpen:

@@ -54,12 +54,27 @@ def cd(path: str):
 
 
 @command
-def mkdir():
+@argument("group_name", description="enter a group name", positional=True)
+def mkdir(group_name: str):
     "Create a new directory (group)"
-    return None
-
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        new_group = ctx.keepass.current_group.FindCreateGroup(group_name, False)
+        if new_group:
+            cprint("{} already exist.".format(new_group))
+        else:
+            new_group = ctx.keepass.current_group.FindCreateGroup(group_name, True)
+            cprint("Created group {}".format(new_group))
 
 @command
-def rmdir():
+@argument("group_name", description="enter a group name", positional=True)
+def rmdir(group_name: str):
     "Delete a directory (group)"
-    return None
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        group = ctx.keepass.current_group.FindCreateGroup(group_name, False)
+        if group:
+            ctx.keepass.db.DeleteGroup(group)
+            cprint("Removed {}.".format(group))
+        else:
+            cprint("rmdir: failed to remove {}: No such group.".format(group))
