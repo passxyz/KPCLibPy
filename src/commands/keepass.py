@@ -125,6 +125,38 @@ class KeePass:
         else:
             return None
 
+    def get_entries(self, name):
+        """
+        Get a dictionary of entries in the sub-group of current group
+        name   - sub-group name
+        """
+        try:
+            if self.groups[name]:
+                entries = {}
+                for entry in self.groups[name].Entries:
+                    entries[entry.Strings.ReadSafe("Title")] = entry
+                return entries
+            else:
+                return None
+        except KeyError:
+            return None
+
+    def get_groups(self, name):
+        """
+        Get a dictionary of groups in the sub-group of current group
+        name   - sub-group name
+        """
+        try:
+            if self.groups[name]:
+                groups = {}
+                for gp in self.groups[name].Groups:
+                    groups[gp.get_Name()] = gp
+                return groups
+            else:
+                return None
+        except KeyError:
+            return None
+        
     def get_value(self, entry, key):
         if(entry.Strings.GetSafe(key).IsProtected):
             if self.is_hidden:

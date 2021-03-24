@@ -20,10 +20,16 @@ def ls(path=""):
     "Lists entries or groups in pwd or in a specified path"
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        for group in ctx.keepass.groups:
-            print("{}/".format(group))
-        for entry in ctx.keepass.entries:
-            print("{}".format(entry))
+        if path:
+            for group in ctx.keepass.get_groups(path):
+                print("{}/".format(group))
+            for entry in ctx.keepass.get_entries(path):
+                print("{}".format(entry))
+        else:
+            for group in ctx.keepass.groups:
+                print("{}/".format(group))
+            for entry in ctx.keepass.entries:
+                print("{}".format(entry))
 
 
 @command
