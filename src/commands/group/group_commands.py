@@ -13,6 +13,11 @@ from termcolor import cprint
 from nubia import command, argument, context
 #from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
+def find_subgroup(current, name):
+    for gp in current.Groups:
+        if gp.get_Name() == name:
+            return gp
+
 
 @command
 @argument("path", description="a specified path", positional=False)
@@ -21,10 +26,23 @@ def ls(path=""):
     ctx = context.get_context()
     if ctx.keepass.is_open():
         if path:
-            for group in ctx.keepass.get_groups(path):
-                print("{}/".format(group))
-            for entry in ctx.keepass.get_entries(path):
-                print("{}".format(entry))
+            path_list = path.split('/')
+            current_group = ctx.keepass.current_group
+            if(len(path_list) > 0):
+                for item in path_list:
+                    if item:
+                        if current_group:
+                            current_group = find_subgroup(current_group, item)
+                        else:
+                            break
+
+            if current_group:
+                for group in current_group.Groups:
+                    print("{}/".format(group.get_Name()))
+                for entry in current_group.Entries:
+                    print("{}".format(entry.Strings.ReadSafe("Title")))
+            else:
+                print("cannot access {}: No such file or directory".format(item))
         else:
             for group in ctx.keepass.groups:
                 print("{}/".format(group))
