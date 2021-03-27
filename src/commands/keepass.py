@@ -18,7 +18,7 @@ from KeePassLib import PwGroup, PwEntry, Collections
 from KeePassLib.Serialization import IOConnectionInfo
 from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Interfaces import IStatusLogger
-from PassXYZLib import PxDatabase
+from PassXYZLib import PxDatabase, PxLibInfo
 
 
 def get_homepath():
@@ -48,6 +48,13 @@ class KeePass:
         self._current_group = None
         self._db_type = "KeePass"
         self.is_hidden = True
+
+    @property
+    def version(self):
+        """
+        ReadOnly property to represent the version of PassXYZLib
+        """
+        return PxLibInfo.Version
 
     @property
     def db(self):
@@ -86,14 +93,20 @@ class KeePass:
         """
         Getter of the current working directory (group)
         """
-        return self._current_group
+        if self._db:
+            return self._db.CurrentGroup
+        else:
+            return self._current_group
 
     @current_group.setter
     def current_group(self, group):
         """
         Setter of the current working directory (group)
         """
-        self._current_group = group
+        if self._db:
+            self._db.CurrentGroup = group
+        else:
+            self._current_group = group
 
     @property
     def groups(self):
@@ -157,6 +170,12 @@ class KeePass:
         except KeyError:
             return None
         
+    def find_group_by_path(self, path):
+        return self.db.FindByPath[PwGroup](path)
+
+    def find_entry_by_path(self, path):
+        return self.db.FindByPath[PwEntry](path)
+
     def get_value(self, entry, key):
         if(entry.Strings.GetSafe(key).IsProtected):
             if self.is_hidden:
@@ -200,7 +219,7 @@ class KeePass:
         try:
             if not self._db.IsOpen:
                 self._db.Open(ioc, cmpKey, logger)
-                self._current_group = self._db.RootGroup
+                #self.current_group = self._db.RootGroup
         except InvalidCompositeKeyException:
             self.close()
             print("The composite key is invalid!")

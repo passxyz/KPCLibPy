@@ -64,8 +64,17 @@ def rename():
 @command
 def version():
     "Display version number"
+    en_table = PrettyTable(["Components", "Version"])
+    en_table.align = "l"
+
     ctx = context.get_context()
-    cprint("Version {}".format(ctx.version))
+    en_table.add_row([colored("KPCLibPy", "yellow"), ctx.version])
+    en_table.add_row([colored("KPCLib", "yellow"), "{}".format(ctx.keepass.version)])
+
+    if ctx.keepass.is_open():
+        en_table.add_row([colored("CurrentGroup", "yellow"), "{}".format(ctx.keepass.current_group)])
+    
+    print(en_table)
     return ctx.version
 
 
