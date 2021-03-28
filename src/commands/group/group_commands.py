@@ -8,25 +8,41 @@
 #
 
 import typing
-#from pathlib import *
+from prettytable import PrettyTable
 from termcolor import cprint
 from nubia import command, argument, context
-#from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
+def print_group(group, detail=False):
+    if detail:
+        s_table = PrettyTable(["Time", "Type", "Name"])
+        for gp in group.Groups:
+            s_table.add_row([gp.LastModificationTime.ToString(), "Group", gp.get_Name()])
+        for entry in group.Entries:
+            s_table.add_row([entry.LastModificationTime.ToString(), "Entry", entry.Strings.ReadSafe("Title")])
+    else:
+        s_table = PrettyTable(["Name"])
+        for gp in group.Groups:
+            s_table.add_row([gp.get_Name()+"/"])
+        for entry in group.Entries:
+            s_table.add_row([entry.Strings.ReadSafe("Title")])
+
+    s_table.align = "l"
+    s_table.border = False
+    s_table.header = False
+    print("Current group is {}.\n".format(group))
+    print(s_table)
 
 @command
 @argument("path", description="a specified path", positional=False)
-def ls(path=""):
+@argument("detail", description="print detail information or not")
+def ls(path="", detail=False):
     "Lists entries or groups in pwd or in a specified path"
     ctx = context.get_context()
     if ctx.keepass.is_open():
         if path:
             current_group = ctx.keepass.find_group_by_path(path)
             if current_group:
-                for group in current_group.Groups:
-                    print("{}/".format(group.get_Name()))
-                for entry in current_group.Entries:
-                    print("{}".format(entry.Strings.ReadSafe("Title")))
+                print_group(current_group, detail)
             else:
                 entry = ctx.keepass.find_entry_by_path(path)
                 if entry:
@@ -34,10 +50,7 @@ def ls(path=""):
                 else:
                     print("cannot access {}: No such file or directory".format(path))
         else:
-            for group in ctx.keepass.groups:
-                print("{}/".format(group))
-            for entry in ctx.keepass.entries:
-                print("{}".format(entry))
+            print_group(ctx.keepass.current_group, detail)
 
 
 @command
