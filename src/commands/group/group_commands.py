@@ -45,7 +45,7 @@ def pwd():
     "Print the current working directory"
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        print(ctx.keepass.current_group.get_Name())
+        print(ctx.keepass.db.CurrentPath)
 
 
 @command
@@ -56,15 +56,14 @@ def cd(path: str):
     """
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        try:
-            if path == '/':
-                ctx.keepass.current_group = ctx.keepass.root_group
-            elif path == '..':
-                ctx.keepass.current_group = ctx.keepass.current_group.ParentGroup
-            elif ctx.keepass.groups[path]:
-                ctx.keepass.current_group = ctx.keepass.groups[path]
-        except KeyError:
-            cprint("Cannnot find {}".format(path), "red")
+        if path == '/':
+            ctx.keepass.current_group = ctx.keepass.root_group
+        else:
+            group = ctx.keepass.find_group_by_path(path)
+            if group:
+                ctx.keepass.current_group = group
+            else:
+                cprint("Cannnot find {}".format(path), "yellow")
 
 
 @command

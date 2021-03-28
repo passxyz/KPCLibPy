@@ -9,46 +9,31 @@
 
 import os
 import sys
-sys.path.append("..")
-import kpclibpy
+sys.path.append("../src")
 
-from KeePassLib import PwDatabase, PwGroup 
-from KeePassLib.Serialization import IOConnectionInfo
-from KeePassLib.Keys import CompositeKey, KcpPassword
-from KeePassLib.Interfaces import IStatusLogger
+from commands.keepass import KeePass, IStatusLogger, get_homepath, lsdb
 
 class ShowWarningsLogger(IStatusLogger):
     __namespace__ = "KPCLibPy"
     
     def StartLogging(self, strOperation, bWriteOperationToLog):
+        print('StartLogging {} {}'.format(strOperation, bWriteOperationToLog))
         return
     def EndLogging(self):
+        print('EndLogging')
         return
     def SetProgress(self, uPercent):
+        #print('In progress {}'.format(uPercent))
         return True
     def SetText(self, strNewText, lsType):
+        print('SetText {} {}'.format(strNewText, lsType))
         return True
-    def ContinueWork():
+    def ContinueWork(self):
         return True
 
-test_db_path = 'utdb.kdbx'
-ioc = IOConnectionInfo.FromPath(test_db_path)
-TEST_DB_KEY = "12345"
-cmpKey = CompositeKey()
-cmpKey.AddUserKey(KcpPassword(TEST_DB_KEY))
+if __name__ == '__main__':
+        _keepass = KeePass()
+        logger = ShowWarningsLogger()
+        db_path = get_homepath() + '/' + "utdb.kdbx"
+        _keepass.open(db_path, "12345", logger)
 
-pwDb = PwDatabase()
-
-swLogger = ShowWarningsLogger()
-pwDb.Open(ioc, cmpKey, swLogger)
-
-def printEntry(kp):
-    for kp in entry.Strings:
-        print('{}={}'.format(kp.Key, kp.Value.ReadString()))
-
-pg = pwDb.RootGroup
-i = 0
-for entry in pg.Entries:
-    print('--- Item {} ---'.format(i))
-    printEntry(entry)
-    i = i + 1
