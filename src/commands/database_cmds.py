@@ -34,11 +34,6 @@ class KPCLibPyLogger(IStatusLogger):
         return True
 
 
-@command
-def edit():
-    "Edit an etnry or group"
-    return None
-
 @command("export")
 def export_db():
     "Export entries to a new database"

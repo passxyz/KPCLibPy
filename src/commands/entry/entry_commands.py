@@ -34,6 +34,17 @@ def find():
 
 
 @command
+@argument("name", description="entry name", positional=True)
+@argument("key", description="source entry/group")
+@argument("value", description="destination entry/group")
+def edit(name, key, value):
+    "Edit an entry. Need to provide a key and a value to edit a field."
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        ctx.keepass.update_entry(name, key, value)
+    
+
+@command
 @argument("title", description="enter a title")
 @argument("username", description="enter a username")
 @argument("password", description="enter a password")

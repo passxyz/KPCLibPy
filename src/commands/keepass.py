@@ -194,6 +194,19 @@ class KeePass:
         except KeyError:
             self._add_entry(title, username, pw, url, notes)
 
+    def update_entry(self, name, key, value):
+        """
+        Update an entry
+        name  - Entry name
+        key   - a key name
+        value - a value
+        """
+        try:
+            self.entries[name].Strings.Set(key, ProtectedString(False, value))
+        except KeyError:
+            cprint("Cannot find entry {}.".format(name), "red")
+
+
     def get_groups(self, name):
         """
         Get a dictionary of groups in the sub-group of current group
