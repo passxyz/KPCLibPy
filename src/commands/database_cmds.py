@@ -55,10 +55,39 @@ def mv():
     return None
 
 
+def rename_entry(src, dst):
+    ctx = context.get_context()
+    try:
+        if(ctx.keepass.entries[src]):
+            ctx.keepass.entries[src].set_Name(dst)
+            return ctx.keepass.entries[dst]
+        else:
+            return None
+    except KeyError:
+        return None
+
+def rename_group(src, dst):
+    ctx = context.get_context()
+    try:
+        if(ctx.keepass.groups[src]):
+            ctx.keepass.groups[src].set_Name(dst)
+            return ctx.keepass.groups[dst]
+        else:
+            return None
+    except KeyError:
+        return None
+
 @command
-def rename():
+@argument("src", description="source entry/group", positional=True)
+@argument("dst", description="destination entry/group", positional=True)
+def rename(src: str, dst: str):
     "Rename a group or entry"
-    return None
+    if rename_entry(src, dst):
+        cprint("Renamed entry {} to {}".format(src, dst))
+    elif rename_group(src, dst):
+        cprint("Renamed group {} to {}".format(src, dst))
+    else:
+        cprint("rename: cannot stat {}: No such entry or group".format(src))
 
 
 @command

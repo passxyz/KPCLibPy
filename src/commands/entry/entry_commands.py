@@ -34,9 +34,16 @@ def find():
 
 
 @command
-def new():
+@argument("title", description="enter a title")
+@argument("username", description="enter a username")
+@argument("password", description="enter a password")
+@argument("url", description="enter a url")
+@argument("notes", description="enter a note")
+def new(title="New entry", username="", password="", url="", notes=""):
     "Create a new entry"
-    return None
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        ctx.keepass.add_entry(title, username, password, url, notes)
 
 
 @command

@@ -13,6 +13,8 @@ from termcolor import cprint
 from nubia import command, argument, context
 
 def print_group(group, detail=False):
+    ctx = context.get_context()
+
     if detail:
         s_table = PrettyTable(["Time", "Type", "Name"])
         for gp in group.Groups:
@@ -24,7 +26,7 @@ def print_group(group, detail=False):
         for gp in group.Groups:
             s_table.add_row([gp.get_Name()+"/"])
         for entry in group.Entries:
-            s_table.add_row([entry.Strings.ReadSafe("Title")])
+            s_table.add_row([entry.Strings.ReadSafe(ctx.keepass.TITLE)])
 
     s_table.align = "l"
     s_table.border = False

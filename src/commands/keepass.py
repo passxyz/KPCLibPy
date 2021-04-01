@@ -15,6 +15,7 @@ from termcolor import cprint, colored
 import kpclibpy
 
 from KeePassLib import PwGroup, PwEntry, Collections
+from KeePassLib.Security import ProtectedString
 from KeePassLib.Serialization import IOConnectionInfo
 from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Interfaces import IStatusLogger
@@ -48,6 +49,11 @@ class KeePass:
         self._current_group = None
         self._db_type = "KeePass"
         self.is_hidden = True
+        self.TITLE = "Title"
+        self.USERNAME = "UserName"
+        self.PASSWORD = "Password"
+        self.URL = "URL"
+        self.NOTES = "Notes"
 
     @property
     def version(self):
@@ -133,7 +139,7 @@ class KeePass:
         if self.current_group:
             entries = {}
             for entry in self.current_group.Entries:
-                entries[entry.Strings.ReadSafe("Title")] = entry
+                entries[entry.Strings.ReadSafe(self.TITLE)] = entry
             return entries
         else:
             return None
@@ -147,12 +153,46 @@ class KeePass:
             if self.groups[name]:
                 entries = {}
                 for entry in self.groups[name].Entries:
-                    entries[entry.Strings.ReadSafe("Title")] = entry
+                    entries[entry.Strings.ReadSafe(self.TITLE)] = entry
                 return entries
             else:
                 return None
         except KeyError:
             return None
+
+    def _add_entry(self, title = "New Entry", username = "", pw = "", url = "", notes = ""):
+        entry = PwEntry()
+        entry.Name = title
+        if username:
+            entry.Strings.Set(self.USERNAME, ProtectedString(False, username))
+        else:
+            entry.Strings.Set(self.USERNAME, ProtectedString(False, self.db.DefaultUserName))
+        
+        if pw:
+            entry.Strings.Set(self.PASSWORD, ProtectedString(True, pw))
+        else:
+            entry.Strings.Set(self.PASSWORD, ProtectedString(True, self.db.DefaultUserName))
+
+        if url:
+            entry.Strings.Set(self.URL, ProtectedString(False, url))
+
+        if notes:
+            entry.Strings.Set(self.NOTES, ProtectedString(False, notes))
+
+        self.current_group.AddEntry(entry, True)
+
+    def add_entry(self, title = "New Entry", username = "", pw = "", url = "", notes = ""):
+        """
+        Added a new entry in the current group
+        name   - sub-group name
+        """
+        try:
+            if(self.entries[title]):
+                cprint("Entry exist.", "red")
+            else:
+                self._add_entry(title, username, pw, url, notes)
+        except KeyError:
+            self._add_entry(title, username, pw, url, notes)
 
     def get_groups(self, name):
         """
