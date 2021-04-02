@@ -275,6 +275,7 @@ class KeePass:
                 #self.current_group = self._db.RootGroup
         except InvalidCompositeKeyException:
             self.close()
-            print("The composite key is invalid!")
+            self._db = None
+            cprint("open: The composite key is invalid!", "red")
             return
 

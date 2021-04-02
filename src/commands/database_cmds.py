@@ -154,10 +154,13 @@ def show(items="database"):
 @command
 @argument("dbfile", description="Pick a data file", choices=lsdb())
 @argument("password", description="Please provide your password")
-def open(dbfile: str, password: str):
+def open(dbfile: str, password = ""):
     """
     This command is used to connect a database.
     """
+    if not password:
+        import getpass
+        password = getpass.getpass('Password:')
 
     ctx = context.get_context()
     db = ctx.keepass.db
