@@ -279,3 +279,15 @@ class KeePass:
             cprint("open: The composite key is invalid!", "red")
             return
 
+    def new(self, db_path, password):
+        ioc = IOConnectionInfo.FromPath(db_path)
+        cmpKey = CompositeKey()
+        cmpKey.AddUserKey(KcpPassword(password))
+
+        self._db = PxDatabase()
+
+        if not self._db.IsOpen:
+            self._db.New(ioc, cmpKey)
+            self.current_group = self._db.RootGroup
+        else:
+            cprint("new: Database already exist.", "red")

@@ -33,7 +33,7 @@ class KPCLibPyLogger(IStatusLogger):
     def ContinueWork(self):
         return True
 
-
+"""
 @command("export")
 def export_db():
     "Export entries to a new database"
@@ -43,6 +43,7 @@ def export_db():
 def import_db():
     "Import another database to the current one"
     return None
+"""
 
 @command
 def mv():
@@ -117,15 +118,21 @@ def save():
 
 @command("show")
 @argument("items", type=str, description="Database configuration, version etc.",
-    choices=["configuration", "version", "database"])
-def show(items="database"):
+    choices=["config", "version", "databases", "help"], positional=True)
+def show(items):
     """
     This command shows the information of the current databases.
     """
     ctx = context.get_context()
     db = ctx.keepass.db
 
-    if items == "database":
+    help_table = PrettyTable(["Sub-command", "Description"])
+    help_table.align = "l"
+    help_table.add_row(["databases", "list of databases"])
+    help_table.add_row(["config", "database configuration"])
+    help_table.add_row(["version", "App version"])
+
+    if items == "config":
         if ctx.keepass.is_open():
             db_table = PrettyTable(["Property", "Value"])
             db_table.align = "l"
@@ -144,11 +151,19 @@ def show(items="database"):
         else:
             cprint("Database is closed", "red")
     elif items == "version":
-        cprint("Version {}".format(ctx.version))
-    elif items == "configuration":
-        cprint("Configuration")
+        version()
+    elif items == "databases":
+        db_table = PrettyTable(["No.", "Name"])
+        db_table.align = "l"
+        num = 1
+        for file in lsdb():
+            db_table.add_row([num, file])
+            num = num + 1
+        print(db_table)
+    elif items == "help":
+        print(help_table)
     else:
-        cprint("Undefined item")
+        print(help_table)
 
 
 @command
@@ -172,6 +187,37 @@ def open(dbfile: str, password = ""):
         logger = KPCLibPyLogger()
         db_path = get_homepath() + '/' + dbfile
         ctx.keepass.open(db_path, password, logger)
+
+
+@command
+@argument("dbfile", description="Pick a data file")
+@argument("password", description="Please provide your password")
+@argument("type", description="kdbx or xyz")
+def newdb(dbfile: str, password = "", type = ".kdbx"):
+    """
+    This command is used to create a new database.
+    """
+
+    ctx = context.get_context()
+    db = ctx.keepass.db
+
+    if ctx.keepass.is_open():
+        cprint("Please close the current database {} before you can create a new database."
+            .format(db.Name))
+    else:
+        newfile = dbfile + type
+        for file in lsdb():
+            if newfile == file:
+                print("Data file {} already exist.".format(newfile))
+                return
+        if not password:
+            import getpass
+            password = getpass.getpass('Password:')
+        db_path = get_homepath() + '/' + newfile
+        ctx.keepass.new(db_path, password)
+        ctx.keepass.db.Name = dbfile
+        ctx.keepass.db.DefaultUserName = dbfile
+        ctx.keepass.db.Description = db_path
 
 
 @command
