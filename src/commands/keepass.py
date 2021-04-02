@@ -14,11 +14,12 @@ from prettytable import PrettyTable
 from termcolor import cprint, colored
 import kpclibpy
 
-from KeePassLib import PwGroup, PwEntry, Collections
+from KeePassLib import PwGroup, PwEntry, SearchParameters
+from KeePassLib.Collections import PwObjectList
+from KeePassLib.Interfaces import IStatusLogger
+from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Security import ProtectedString
 from KeePassLib.Serialization import IOConnectionInfo
-from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
-from KeePassLib.Interfaces import IStatusLogger
 from PassXYZLib import PxDatabase, PxLibInfo
 
 
@@ -143,6 +144,16 @@ class KeePass:
             return entries
         else:
             return None
+
+    def find(self, keywords):
+        sp = SearchParameters()
+        sp.SearchString = keywords
+        ol = PwObjectList[PwEntry]()
+        self.root_group.SearchEntries(sp, ol)
+        entries = {}
+        for entry in ol:
+            entries[entry.Name] = entry
+        return entries
 
     def get_entries(self, name):
         """

@@ -45,6 +45,42 @@ def import_db():
     return None
 """
 
+
+def print_entries(entries):
+    e_table = PrettyTable(["No", "Entry Name"])
+    num = 0
+    indexes = {}
+    for entry in entries:
+        num = num + 1
+        e_table.add_row([num, entry])
+        indexes[num] = entry
+    e_table.align = "l"
+    e_table.border = False
+    e_table.header = False
+    print(e_table)
+    return indexes
+
+@command
+@argument("keywords", description="Search keyword in entries", positional=True)
+def find(keywords: str):
+    "Find entries"
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        entries = ctx.keepass.find(keywords)
+        while True:
+            indexes = print_entries(entries)
+            x = input('Enter the entry number (or q to quite):')
+            try:
+                if x == 'q':
+                    break
+                else:
+                    ctx.keepass.print_entry(entries[indexes[int(x)]])
+            except KeyError:
+                print("Wrong entry number, please choose a correct one or enter 'q' to quit")
+    else:
+        cprint("Please connect to a database first.", "red")
+
+
 @command
 def mv():
     "Move an entry or group to a new location"

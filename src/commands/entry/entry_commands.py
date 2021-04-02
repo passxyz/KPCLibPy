@@ -28,12 +28,6 @@ def cat(entry: str):
 
 
 @command
-def find():
-    "Find entries"
-    return None
-
-
-@command
 @argument("name", description="entry name", positional=True)
 @argument("key", description="source entry/group")
 @argument("value", description="destination entry/group")
