@@ -15,27 +15,31 @@ from nubia import command, argument, context
 
 
 @command
-@argument("entry", description="enter an entry", positional=True)
-def cat(entry: str):
+@argument("path", description="the entry path", positional=True)
+def cat(path: str):
     "Show an entry"
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        try:
-            if ctx.keepass.entries[entry]:
-                ctx.keepass.print_entry(ctx.keepass.entries[entry])
-        except KeyError:
-            cprint("Cannnot find {}".format(entry), "red")
+        entry = ctx.keepass.find_entry_by_path(path)
+        if entry:
+            ctx.keepass.print_entry(entry)
+        else:
+            print("cannot access {}: No such file or directory".format(path))
 
 
 @command
-@argument("name", description="entry name", positional=True)
+@argument("path", description="entry path", positional=True)
 @argument("key", description="source entry/group")
 @argument("value", description="destination entry/group")
-def edit(name, key, value):
+def edit(path, key, value):
     "Edit an entry. Need to provide a key and a value to edit a field."
     ctx = context.get_context()
     if ctx.keepass.is_open():
-        ctx.keepass.update_entry(name, key, value)
+        entry = ctx.keepass.find_entry_by_path(path)
+        if entry:
+            ctx.keepass.update_entry(entry, key, value)
+        else:
+            print("cannot access {}: No such file or directory".format(path))
     
 
 @command

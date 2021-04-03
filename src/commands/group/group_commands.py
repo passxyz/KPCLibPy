@@ -48,7 +48,7 @@ def ls(path="", detail=False):
             else:
                 entry = ctx.keepass.find_entry_by_path(path)
                 if entry:
-                    print("{}".format(entry.Strings.ReadSafe("Title")))
+                    print("{}".format(entry.get_Name()))
                 else:
                     print("cannot access {}: No such file or directory".format(path))
         else:

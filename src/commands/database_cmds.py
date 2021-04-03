@@ -81,10 +81,42 @@ def find(keywords: str):
         cprint("Please connect to a database first.", "red")
 
 
+def _move_group(src, dst_group):
+    """
+    Move src to a group
+    src       - source path of an entry or a group
+    dst_group - a PwGroup instance
+    """
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        if src:
+            src_group = ctx.keepass.find_group_by_path(src)
+            if src_group:
+                ctx.keepass.move_group(src_group, dst_group)
+            else:
+                src_entry = ctx.keepass.find_entry_by_path(src)
+                if src_entry:
+                    ctx.keepass.move_entry(src_entry, dst_group)
+                else:
+                    print("mv: cannot access {}: No such file or directory".format(src))
+        else:
+            print("mv: src is empty.")
+
 @command
-def mv():
+@argument("src", description="source entry/group", positional=True)
+@argument("dst", description="destination group", positional=True)
+def mv(src: str, dst: str):
     "Move an entry or group to a new location"
-    return None
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        if dst:
+            dst_group = ctx.keepass.find_group_by_path(dst)
+            if dst_group:
+                _move_group(src, dst_group)
+            else:
+                print("mv: cannot access group {}: No such file or directory".format(dst))
+        else:
+            print("mv: dst is empty.")
 
 
 def rename_entry(src, dst):

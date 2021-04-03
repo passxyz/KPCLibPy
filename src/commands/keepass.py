@@ -205,17 +205,14 @@ class KeePass:
         except KeyError:
             self._add_entry(title, username, pw, url, notes)
 
-    def update_entry(self, name, key, value):
+    def update_entry(self, entry, key, value):
         """
         Update an entry
-        name  - Entry name
+        entry  - Entry to be updated
         key   - a key name
         value - a value
         """
-        try:
-            self.entries[name].Strings.Set(key, ProtectedString(False, value))
-        except KeyError:
-            cprint("Cannot find entry {}.".format(name), "red")
+        entry.Strings.Set(key, ProtectedString(False, value))
 
 
     def get_groups(self, name):
@@ -302,3 +299,17 @@ class KeePass:
             self.current_group = self._db.RootGroup
         else:
             cprint("new: Database already exist.", "red")
+
+    def move_group(self, src_group, dst_group):
+        if self._db.IsOpen:
+            if self._db.MoveGroup(src_group, dst_group):
+                print("Moved {} to {}".format(src_group.get_Name(), dst_group.get_Name()))
+            else:
+                print("Cannot move {} to {}".format(src_group.get_Name(), dst_group.get_Name()))
+
+    def move_entry(self, src_entry, dst_group):
+        if self._db.IsOpen:
+            if self._db.MoveEntry(src_entry, dst_group):
+                print("Moved {} to {}".format(src_entry.get_Name(), dst_group.get_Name()))
+            else:
+                print("Cannot move {} to {}".format(src_entry.get_Name(), dst_group.get_Name()))
