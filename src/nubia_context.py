@@ -17,7 +17,7 @@ _keepass = KeePass()
 class NubiaPassXYZContext(context.Context):
     def __init__(self, *args, **kwargs):
         self.keepass = _keepass
-        self.version = "1.0.8"
+        self.version = "1.0.9"
         self._current_group = None
         super().__init__()
 

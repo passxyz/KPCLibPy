@@ -1,87 +1,39 @@
-# KeePass
+# KeePass command line application
 
-## Access KeePass database using [Python.NET][1]
-There is a Python library [pykeepass][2] which is a Python implementation for KeePass database. This is a pure Python implementation referring to [KeePassXC][4] project.
+[KPCLibPy][1] is a KeePass command application written in Python.
 
-The orginal KeePass library is implemented in C# for .NET Framework. I modified it slightly to target .NET standard 2.0 as [KPCLib][5] project. It is possible to use [KPCLib][5] and [Python.NET][1] to access KeePass database.
+The original [KeePass][3] by Dominik Reichl is a .NET application written in C#. `KeePassLib` is part of KeePass which can be built as a library to support the major functions of KeePass. However, at the moment, `KeePassLib` is still built for .NET framework which can run on Windows only. I modified `KeePassLib` and extended it as a .NET Standard library - [KPCLib][2]. [KPCLib][2] stands for KeePass Portable Class Library at the time when I started the work. Portable Class Library (PCL) is replaced by .NET Standard Library nowaday.
 
-We can refer to this article [How to call a dynamic library][3] to use [KPCLib][5] in Python.
+[KPCLibPy][1] is just a Python wrapper of [KPCLib][2] using [Python.NET][4]. In this perspective, `KPCLibPy` is fully compatiable to the original KeePass, since the majority of code is  the same as KeePass.
 
-To install the required packages, you can run the following command on Windows.
+In order to save the development effort and have a nice user interface, the Python library [python-nubia][5] from Facebook is used as the framework to support command line interface.
 
-`C:\> pip install -r requirements.txt`
+## Key Features
+- Full compatible with the original KeePass
+- .NET Standard 2.0 support with [KPCLib][2]
+- Cross platform support with .NET Standard and .NET core
+- Nice user interface with [python-nubia][5]
+- Interactive mode that offers fish-style auto-completion
 
-or, the following command on Linux.
-
-`$ pip3 install -r requirements.txt`
-
-On Windows 10, we have .NET runtime already. On Linux, we need to install .NET runtime and Mono. Below is my test environment on Linux. You can also use my docker image [docker-mono][8].
-
-## Test environment
-- Ubuntu 18.04
-- [.NET 5.0][7]
-- [Python.NET][6] - 2.5.2
-- [KPCLib][5] - 1.1.9
-
-```
-$ dotnet --info
-.NET SDK (reflecting any global.json):
- Version:   5.0.103
- Commit:    9effbc8ad5
-
-Runtime Environment:
- OS Name:     ubuntu
- OS Version:  18.04
- OS Platform: Linux
- RID:         ubuntu.18.04-x64
- Base Path:   /usr/share/dotnet/sdk/5.0.103/
-
-Host (useful for support):
-  Version: 5.0.3
-  Commit:  eae88cc11b
-
-.NET SDKs installed:
-  5.0.103 [/usr/share/dotnet/sdk]
-
-.NET runtimes installed:
-  Microsoft.AspNetCore.App 5.0.3 [/usr/share/dotnet/shared/Microsoft.AspNetCore.App]
-  Microsoft.NETCore.App 5.0.3 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
-
-To install additional .NET runtimes or SDKs:
-  https://aka.ms/dotnet-download
+## Installation
+As a developer, you can use [KPCLibPy][1] from GitHub directly.
+```bash
+git clone https://github.com/shugaoye/KPCLibPy.git
+cd KPCLibPy
+pip install -r requirements.txt
+cd src
+python3 ./nubia_main.py
 ```
 
-```
-$ mono -V
-Mono JIT compiler version 6.12.0.107 (tarball Thu Dec 10 05:22:56 UTC 2020)
-Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com
-        TLS:           __thread
-        SIGSEGV:       altstack
-        Notifications: epoll
-        Architecture:  amd64
-        Disabled:      none
-        Misc:          softdebug 
-        Interpreter:   yes
-        LLVM:          yes(610)
-        Suspend:       hybrid
-        GC:            sgen (concurrent by default)
+![image01](https://github.com/passxyz/passxyz.github.io/raw/master/images/kpclib/kpclibpy.gif)
 
-```
-
-## Build KPCLib
-
-```
-$ git clone https://github.com/passxyz/KPCLib.git
-$ dotnet build
-$ dotnet publish
-```
+## Docker image
+A Dockr image - [docker-mono][6] can be used on Linux or Windows 10 (WSL).
 
 
-[1]: http://pythonnet.github.io/
-[2]: https://github.com/libkeepass/pykeepass
-[3]: https://github.com/pythonnet/pythonnet/wiki/How-to-call-a-dynamic-library
-[4]: https://github.com/keepassxreboot/keepassxc
-[5]: https://github.com/passxyz/KPCLib
-[6]: https://github.com/pythonnet/pythonnet
-[7]: https://dotnet.microsoft.com/download/dotnet/5.0
-[8]: https://hub.docker.com/r/shugaoye/docker-mono
+[1]: https://github.com/passxyz/KPCLibPy
+[2]: https://github.com/passxyz/KPCLib
+[3]: https://keepass.info/
+[4]: http://pythonnet.github.io/
+[5]: https://github.com/facebookincubator/python-nubia
+[6]: https://github.com/shugaoye/docker-mono
