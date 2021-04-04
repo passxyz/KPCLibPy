@@ -8,14 +8,15 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="kpclibpy",
-    version="1.0.9",
+    version="1.1.0",
     description="KeePass command line application",
     url="https://github.com/passxyz/KPCLibPy",
     license="MIT",
     author="Roger Ye",
     author_email="shugaoye@yahoo.com",
-    package_dir={"": "src"},
-    packages=find_packages(where="src"),
+    #package_dir={"": "src"},
+    #packages=find_packages(where="src"),
+    #package_data={'kpclibpy.kpclib': ['lib/*.dll']},
     install_requires=["pycparser==2.20",
         "pythonnet==2.5.2",
         "python-nubia==0.2b5"],

@@ -9,14 +9,14 @@
 
 import sys
 import os
+from typing import Any
 
-import commands
+import kpclibpy.commands
 from nubia import Nubia, Options
-from nubia_plugin import NubiaPassXYZPlugin
-from commands.keepass import get_homepath
+from kpclibpy.nubia_plugin import NubiaPassXYZPlugin
+from kpclibpy.commands.keepass import get_homepath
 
-
-if __name__ == "__main__":
+def main() -> Any:
     homepath = get_homepath()
     if not os.path.exists(homepath):
         os.mkdir(homepath)
@@ -24,10 +24,13 @@ if __name__ == "__main__":
     plugin = NubiaPassXYZPlugin()
     shell = Nubia(
         name="nubia_passxyz",
-        command_pkgs=commands,
+        command_pkgs=kpclibpy.commands,
         plugin=plugin,
         options=Options(
             persistent_history=False, auto_execute_single_suggestions=False
         ),
     )
     sys.exit(shell.run())
+
+if __name__ == "__main__":
+    sys.exit(main())

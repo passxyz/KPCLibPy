@@ -8,8 +8,8 @@
 #
 
 import argparse
-from nubia_context import NubiaPassXYZContext
-from nubia_statusbar import NubiaPassXYZStatusBar
+from kpclibpy.nubia_context import NubiaPassXYZContext
+from kpclibpy.nubia_statusbar import NubiaPassXYZStatusBar
 from nubia import PluginInterface, CompletionDataSource
 from nubia.internal.blackcmd import CommandBlacklist
 

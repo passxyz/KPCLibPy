@@ -12,7 +12,7 @@ from os import listdir
 from os.path import isfile, join
 from prettytable import PrettyTable
 from termcolor import cprint, colored
-import kpclibpy
+import kpclibpy.kpclib
 
 from KeePassLib import PwGroup, PwEntry, SearchParameters
 from KeePassLib.Collections import PwObjectList
