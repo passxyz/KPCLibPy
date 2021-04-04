@@ -10,14 +10,14 @@
 from nubia import context
 from nubia import exceptions
 from nubia import eventbus
-from commands.keepass import KeePass
+from kpclibpy.commands.keepass import KeePass
 
 _keepass = KeePass()
 
 class NubiaPassXYZContext(context.Context):
     def __init__(self, *args, **kwargs):
         self.keepass = _keepass
-        self.version = "1.0.9"
+        self.version = "1.1.0"
         self._current_group = None
         super().__init__()
 

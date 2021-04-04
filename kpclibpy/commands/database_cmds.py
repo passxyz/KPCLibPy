@@ -11,7 +11,7 @@ import typing
 from prettytable import PrettyTable
 from termcolor import cprint, colored
 from nubia import command, argument, context
-from commands.keepass import IStatusLogger, get_homepath, lsdb
+from kpclibpy.commands.keepass import IStatusLogger, get_homepath, lsdb
 #from KeePassLib import PwGroup, PwEntry, Collections
 
 

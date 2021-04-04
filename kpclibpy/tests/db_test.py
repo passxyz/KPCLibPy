@@ -12,7 +12,7 @@ import pytest
 @pytest.mark.order(1)
 def test_version(pxshell):
     version = pxshell.run_interactive_line('version')
-    assert version == "1.0.9"
+    assert version == "1.1.0"
 
 
 @pytest.mark.order(2)
