@@ -3,7 +3,7 @@
 from setuptools import setup, Command, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 
-with open("README.md", "r", encoding="utf-8") as f:
+with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
