@@ -14,10 +14,8 @@ setup(
     license="MIT",
     author="Roger Ye",
     author_email="shugaoye@yahoo.com",
-    #package_dir={"": "src"},
-    #packages=find_packages(where="src"),
-    #package_data={'kpclibpy.kpclib': ['lib/*.dll']},
-    install_requires=["pycparser==2.20",
+    install_requires=[
+        "pycparser==2.20",
         "importlib_metadata >= 3.6",
         "pythonnet==2.5.2",
         "python-nubia==0.2b5"],
