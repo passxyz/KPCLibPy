@@ -21,13 +21,17 @@ __copyright__ = "Copyright 2021 Roger Ye"
 
 import importlib_metadata
 
-metadata = importlib_metadata.metadata("kpclibpy")
+try:
+    metadata = importlib_metadata.metadata("kpclibpy")
 
 
-__title__ = metadata["name"]
-__summary__ = metadata["summary"]
-__uri__ = metadata["home-page"]
-__version__ = metadata["version"]
-__author__ = metadata["author"]
-__email__ = metadata["author-email"]
-__license__ = metadata["license"]
+    __title__ = metadata["name"]
+    __summary__ = metadata["summary"]
+    __uri__ = metadata["home-page"]
+    __version__ = metadata["version"]
+    __author__ = metadata["author"]
+    __email__ = metadata["author-email"]
+    __license__ = metadata["license"]
+except ModuleNotFoundError:
+    __version__ = "1.1.3.dev2"
+    print("Debug build ", __version__)

@@ -76,7 +76,7 @@ def find(keywords: str):
                 else:
                     ctx.keepass.print_entry(entries[indexes[int(x)]])
                     input('Please any key to continue')
-            except KeyError:
+            except ValueError:
                 print("Wrong entry number, please choose a correct one or enter 'q' to quit")
     else:
         cprint("Please connect to a database first.", "red")
