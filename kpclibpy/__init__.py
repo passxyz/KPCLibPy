@@ -21,7 +21,7 @@ __copyright__ = "Copyright 2021 Roger Ye"
 
 import importlib_metadata
 
-metadata = importlib_metadata.metadata("twine")
+metadata = importlib_metadata.metadata("kpclibpy")
 
 
 __title__ = metadata["name"]
