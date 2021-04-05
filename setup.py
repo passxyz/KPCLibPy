@@ -8,7 +8,7 @@ with open("README.rst", "r", encoding="utf-8") as f:
 
 setup(
     name="kpclibpy",
-    version="1.1.0",
+    #version="1.1.0",
     description="KeePass command line application",
     url="https://github.com/passxyz/KPCLibPy",
     license="MIT",
@@ -18,9 +18,11 @@ setup(
     #packages=find_packages(where="src"),
     #package_data={'kpclibpy.kpclib': ['lib/*.dll']},
     install_requires=["pycparser==2.20",
+        "importlib_metadata >= 3.6",
         "pythonnet==2.5.2",
         "python-nubia==0.2b5"],
     long_description=long_description,
+    use_scm_version=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

@@ -1,6 +1,7 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "pycparser"]
-build-backend = "setuptools.build_meta"
+[build-system]
+requires = ["setuptools>=40.8", "wheel", "setuptools_scm>=1.15"]
+build-backend = "setuptools.build_meta:__legacy__"
 
 [tool.pytest.ini_options]
 xfail_strict = true
