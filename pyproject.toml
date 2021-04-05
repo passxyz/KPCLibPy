@@ -1,5 +1,4 @@
 [build-system]
-[build-system]
 requires = ["setuptools>=40.8", "wheel", "setuptools_scm>=1.15"]
 build-backend = "setuptools.build_meta:__legacy__"
 
