@@ -12,6 +12,7 @@ from os import listdir
 from os.path import isfile, join
 from prettytable import PrettyTable
 from termcolor import cprint, colored
+import consolemd
 import kpclibpy.kpclib
 
 from KeePassLib import PwGroup, PwEntry, SearchParameters
@@ -37,6 +38,12 @@ class KeePass:
     """
     Python interface of KeePassLib
     """
+    TITLE = "Title"
+    USERNAME = "UserName"
+    PASSWORD = "Password"
+    URL = "URL"
+    NOTES = "Notes"
+
     _keepass = None
 
     def __new__(cls, *args, **kwargs):
@@ -50,11 +57,6 @@ class KeePass:
         self._current_group = None
         self._db_type = "KeePass"
         self.is_hidden = True
-        self.TITLE = "Title"
-        self.USERNAME = "UserName"
-        self.PASSWORD = "Password"
-        self.URL = "URL"
-        self.NOTES = "Notes"
 
     @property
     def version(self):
@@ -140,7 +142,7 @@ class KeePass:
         if self.current_group:
             entries = {}
             for entry in self.current_group.Entries:
-                entries[entry.Strings.ReadSafe(self.TITLE)] = entry
+                entries[entry.Strings.ReadSafe(KeePass.TITLE)] = entry
             return entries
         else:
             return None
@@ -164,7 +166,7 @@ class KeePass:
             if self.groups[name]:
                 entries = {}
                 for entry in self.groups[name].Entries:
-                    entries[entry.Strings.ReadSafe(self.TITLE)] = entry
+                    entries[entry.Strings.ReadSafe(KeePass.TITLE)] = entry
                 return entries
             else:
                 return None
@@ -244,14 +246,21 @@ class KeePass:
         return entry.Strings.ReadSafe(key)
 
     def print_entry(self,  entry):
-        en_table = PrettyTable(["Key", "Value"])
+        en_table = PrettyTable([colored(KeePass.TITLE, "yellow"), entry.Strings.ReadSafe(KeePass.TITLE)])
         en_table.align = "l"
+        en_table.border = False
 
         for x in entry.Strings:
-            en_table.add_row([colored(x.Key, "yellow"), self.get_value(entry, x.Key)])
-            #cprint("{}:".format(x.Key), "yellow")
-            #cprint("\t{}\n".format(self.get_value(entry, x.Key)))
+            if x.Key != KeePass.TITLE and x.Key != KeePass.NOTES:
+                value = self.get_value(entry, x.Key)
+                if value:
+                    en_table.add_row([colored(x.Key, "yellow"), self.get_value(entry, x.Key)])
         print(en_table)
+        #print(entry.Strings.ReadSafe(KeePass.NOTES))
+        text = entry.Strings.ReadSafe(KeePass.NOTES)
+        kwargs = {}
+        renderer = consolemd.Renderer()
+        renderer.render(text, **kwargs)
 
     def is_open(self):
         if self.db:

@@ -11,6 +11,7 @@ import typing
 from prettytable import PrettyTable
 from termcolor import cprint
 from nubia import command, argument, context
+from kpclibpy.commands.keepass import KeePass
 
 def print_group(group, detail=False):
     ctx = context.get_context()
@@ -20,13 +21,13 @@ def print_group(group, detail=False):
         for gp in group.Groups:
             s_table.add_row([gp.LastModificationTime.ToString(), "Group", gp.get_Name()])
         for entry in group.Entries:
-            s_table.add_row([entry.LastModificationTime.ToString(), "Entry", entry.Strings.ReadSafe("Title")])
+            s_table.add_row([entry.LastModificationTime.ToString(), "Entry", entry.Strings.ReadSafe(KeePass.TITLE)])
     else:
         s_table = PrettyTable(["Name"])
         for gp in group.Groups:
             s_table.add_row([gp.get_Name()+"/"])
         for entry in group.Entries:
-            s_table.add_row([entry.Strings.ReadSafe(ctx.keepass.TITLE)])
+            s_table.add_row([entry.Strings.ReadSafe(KeePass.TITLE)])
 
     s_table.align = "l"
     s_table.border = False

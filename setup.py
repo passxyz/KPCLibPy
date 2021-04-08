@@ -16,6 +16,7 @@ setup(
     author_email="shugaoye@yahoo.com",
     install_requires=[
         "pycparser==2.20",
+        "consolemd >= 0.5.1",
         "importlib_metadata >= 3.6",
         "pythonnet==2.5.2",
         "python-nubia==0.2b5"],
