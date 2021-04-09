@@ -8,6 +8,7 @@
 #
 
 import typing
+import click
 #from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
@@ -31,13 +32,17 @@ def cat(path: str):
 @argument("path", description="entry path", positional=True)
 @argument("key", description="source entry/group")
 @argument("value", description="destination entry/group")
-def edit(path, key, value):
+def edit(path, key="Notes", value=""):
     "Edit an entry. Need to provide a key and a value to edit a field."
     ctx = context.get_context()
     if ctx.keepass.is_open():
         entry = ctx.keepass.find_entry_by_path(path)
         if entry:
-            ctx.keepass.update_entry(entry, key, value)
+            if value:
+                ctx.keepass.update_entry(entry, key, value)
+            else:
+                value = click.edit(entry.Strings.ReadSafe(key))
+                ctx.keepass.update_entry(entry, key, value)
         else:
             print("cannot access {}: No such file or directory".format(path))
     

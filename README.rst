@@ -69,4 +69,26 @@ A Dockr image -
 `docker-mono <https://github.com/shugaoye/docker-mono>`__ can be used on
 Linux or Windows 10 (WSL).
 
+Issues
+------
+On Windows platform, you may get the below error message:
+::
+
+    Unhandled exception in event loop:
+    File "c:\users\kpclibpy\appdata\local\programs\python\python38-32\lib\asyncio\proactor_events.py", line 768, in _loop_self_reading
+        f.result()  # may raise
+    File "c:\users\kpclibpy\appdata\local\programs\python\python38-32\lib\asyncio\windows_events.py", line 808, in _poll
+        value = callback(transferred, key, ov)
+    File "c:\users\kpclibpy\appdata\local\programs\python\python38-32\lib\asyncio\windows_events.py", line 457, in finish_recv
+        raise ConnectionResetError(*exc.args)
+
+    Exception [WinError 995] The I/O operation has been aborted because of either a thread exit or an application request
+    Press ENTER to continue...
+
+This is an issue of prompt-toolkit. You can change prompt-toolkit to version 2.x.
+
+.. code:: bash
+
+    pip install -U prompt-toolkit~=2.0
+
 .. |image01| image:: https://github.com/passxyz/passxyz.github.io/raw/master/images/kpclib/kpclibpy.gif
