@@ -8,6 +8,7 @@
 #
 
 import typing
+import click
 #from pathlib import *
 from termcolor import cprint
 from nubia import command, argument, context
@@ -31,13 +32,18 @@ def cat(path: str):
 @argument("path", description="entry path", positional=True)
 @argument("key", description="source entry/group")
 @argument("value", description="destination entry/group")
-def edit(path, key, value):
+@argument("protected", description="print detail information or not")
+def edit(path, key="Notes", value="", protected=False):
     "Edit an entry. Need to provide a key and a value to edit a field."
     ctx = context.get_context()
     if ctx.keepass.is_open():
         entry = ctx.keepass.find_entry_by_path(path)
         if entry:
-            ctx.keepass.update_entry(entry, key, value)
+            if value:
+                ctx.keepass.update_entry(entry, key, value, protected)
+            else:
+                value = click.edit(entry.Strings.ReadSafe(key))
+                ctx.keepass.update_entry(entry, key, value, protected)
         else:
             print("cannot access {}: No such file or directory".format(path))
     
@@ -57,15 +63,20 @@ def new(title="New entry", username="", password="", url="", notes=""):
 
 @command
 @argument("entry_name", description="enter a entry name", positional=True)
-def rm(entry_name: str):
-    "Remove an entry"
+@argument("key", description="source entry/group")
+def rm(entry_name: str, key=""):
+    "Remove an entry or a field"
     ctx = context.get_context()
     if ctx.keepass.is_open():
         try:
             entry = ctx.keepass.entries[entry_name]
             if entry:
-                ctx.keepass.db.DeleteEntry(entry)
-                cprint("Removed {}.".format(entry_name))
+                if key:
+                    ctx.keepass.update_entry(entry, key, "")
+                    cprint("Removed field {}.".format(key))
+                else:
+                    ctx.keepass.db.DeleteEntry(entry)
+                    cprint("Removed entry {}.".format(entry_name))
             else:
                 cprint("rm: cannot remove {}: No such entry".format(entry_name), "red")
         except KeyError:

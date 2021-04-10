@@ -8,10 +8,13 @@
 #
 
 from pathlib import *
-from os import listdir
+from os import listdir, path
 from os.path import isfile, join
 from prettytable import PrettyTable
 from termcolor import cprint, colored
+import configparser
+import consolemd
+
 import kpclibpy.kpclib
 
 from KeePassLib import PwGroup, PwEntry, SearchParameters
@@ -20,23 +23,38 @@ from KeePassLib.Interfaces import IStatusLogger
 from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyException
 from KeePassLib.Security import ProtectedString
 from KeePassLib.Serialization import IOConnectionInfo
-from PassXYZLib import PxDatabase, PxLibInfo
+from PassXYZLib import PxDefs, PxDatabase, PxLibInfo
 
 
 def get_homepath():
-    return str(Path.home())+'/.kpclibdb'
+    config_file = str(Path.home())+'/.kpclibdb/kpclibpy.ini'
+
+    if path.exists(config_file):
+        config = configparser.ConfigParser()
+        config.read(config_file)
+        return config['DEFAULT']['homepath']
+    else:
+        return str(Path.home())+'/.kpclibdb'
 
 
 def lsdb():
+    import fnmatch
     home_path = get_homepath()
-    onlyfiles = [f for f in listdir(home_path) if isfile(join(home_path, f))]
-    return onlyfiles
+    files = fnmatch.filter(listdir(home_path), "*.kdbx") + fnmatch.filter(listdir(home_path), "*.xyz")
+    #onlyfiles = [f for f in listdir(home_path) if isfile(join(home_path, f))]
+    return files
 
 
 class KeePass:
     """
     Python interface of KeePassLib
     """
+    TITLE = "Title"
+    USERNAME = "UserName"
+    PASSWORD = "Password"
+    URL = "URL"
+    NOTES = "Notes"
+
     _keepass = None
 
     def __new__(cls, *args, **kwargs):
@@ -49,12 +67,9 @@ class KeePass:
         self._db = None
         self._current_group = None
         self._db_type = "KeePass"
+        self._file_name = None
+        self._user_name = None
         self.is_hidden = True
-        self.TITLE = "Title"
-        self.USERNAME = "UserName"
-        self.PASSWORD = "Password"
-        self.URL = "URL"
-        self.NOTES = "Notes"
 
     @property
     def version(self):
@@ -71,11 +86,37 @@ class KeePass:
         return self._db
 
     @property
+    def user_name(self):
+        """
+        Getter of decoded file name
+        """
+        if self._file_name:
+            self._user_name = PxDefs.GetUserNameFromDataFile(self._file_name)
+
+        return self._user_name
+
+    @property
+    def file_name(self):
+        """
+        Getter of database file name
+        """
+        return self._file_name
+
+    @file_name.setter
+    def file_name(self, name):
+        """
+        Setter of database file name
+        """
+        self._file_name = name
+
+    @property
     def db_type(self):
         """
         Getter of database type
         The database type can be KeePass or PassXYZ
         """
+        if self._file_name:
+            self._db_type = PxDefs.GetDatabaseType(self._file_name)
         return self._db_type
 
     @db_type.setter
@@ -140,7 +181,7 @@ class KeePass:
         if self.current_group:
             entries = {}
             for entry in self.current_group.Entries:
-                entries[entry.Strings.ReadSafe(self.TITLE)] = entry
+                entries[entry.Strings.ReadSafe(KeePass.TITLE)] = entry
             return entries
         else:
             return None
@@ -164,7 +205,7 @@ class KeePass:
             if self.groups[name]:
                 entries = {}
                 for entry in self.groups[name].Entries:
-                    entries[entry.Strings.ReadSafe(self.TITLE)] = entry
+                    entries[entry.Strings.ReadSafe(KeePass.TITLE)] = entry
                 return entries
             else:
                 return None
@@ -205,14 +246,18 @@ class KeePass:
         except KeyError:
             self._add_entry(title, username, pw, url, notes)
 
-    def update_entry(self, entry, key, value):
+    def update_entry(self, entry, key, value, protected=False):
         """
         Update an entry
         entry  - Entry to be updated
         key   - a key name
         value - a value
         """
-        entry.Strings.Set(key, ProtectedString(False, value))
+        # If it is a PxEntry, we need to encode key
+        if PxDefs.IsPxEntry(entry):
+            PxDefs.UpdatePxEntry(entry, key, value, protected)
+        else:
+            entry.Strings.Set(key, ProtectedString(protected, value))
 
 
     def get_groups(self, name):
@@ -244,14 +289,24 @@ class KeePass:
         return entry.Strings.ReadSafe(key)
 
     def print_entry(self,  entry):
-        en_table = PrettyTable(["Key", "Value"])
+        en_table = PrettyTable([colored(KeePass.TITLE, "yellow"), entry.Strings.ReadSafe(KeePass.TITLE)])
         en_table.align = "l"
+        en_table.border = False
 
         for x in entry.Strings:
-            en_table.add_row([colored(x.Key, "yellow"), self.get_value(entry, x.Key)])
-            #cprint("{}:".format(x.Key), "yellow")
-            #cprint("\t{}\n".format(self.get_value(entry, x.Key)))
+            if x.Key != KeePass.TITLE and x.Key != KeePass.NOTES:
+                value = self.get_value(entry, x.Key)
+                if value:
+                    if PxDefs.IsPxEntry(entry):
+                        en_table.add_row([colored(PxDefs.DecodeKey(x.Key), "yellow"), self.get_value(entry, x.Key)])
+                    else:
+                        en_table.add_row([colored(x.Key, "yellow"), self.get_value(entry, x.Key)])
         print(en_table)
+        #print(entry.Strings.ReadSafe(KeePass.NOTES))
+        text = entry.Strings.ReadSafe(KeePass.NOTES)
+        kwargs = {}
+        renderer = consolemd.Renderer()
+        renderer.render(text, **kwargs)
 
     def is_open(self):
         if self.db:
@@ -280,6 +335,7 @@ class KeePass:
         try:
             if not self._db.IsOpen:
                 self._db.Open(ioc, cmpKey, logger)
+                self._file_name = db_path
                 #self.current_group = self._db.RootGroup
         except InvalidCompositeKeyException:
             self.close()
