@@ -215,6 +215,9 @@ def show(items):
             db_table.add_row([colored("HistoryMaxSize", "magenta"), db.HistoryMaxSize])
             db_table.add_row([colored("Description", "magenta"), db.Description])
             db_table.add_row([colored("MaintenanceHistoryDays", "magenta"), db.MaintenanceHistoryDays])
+            db_table.add_row([colored("Filename", "magenta"), ctx.keepass.file_name])
+            if ctx.keepass.db_type == "PassXYZ":
+                db_table.add_row([colored("Decoded Filename", "magenta"), ctx.keepass.user_name])
             cprint("Database configureation", "yellow")
             print(db_table)
         else:
@@ -256,6 +259,8 @@ def open(dbfile: str, password = ""):
         logger = KPCLibPyLogger()
         db_path = get_homepath() + '/' + dbfile
         ctx.keepass.open(db_path, password, logger)
+    
+    ctx.keepass.file_name = dbfile
 
 
 @command
