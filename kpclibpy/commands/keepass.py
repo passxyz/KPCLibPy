@@ -8,11 +8,13 @@
 #
 
 from pathlib import *
-from os import listdir
+from os import listdir, path
 from os.path import isfile, join
 from prettytable import PrettyTable
 from termcolor import cprint, colored
+import configparser
 import consolemd
+
 import kpclibpy.kpclib
 
 from KeePassLib import PwGroup, PwEntry, SearchParameters
@@ -25,13 +27,22 @@ from PassXYZLib import PxDefs, PxDatabase, PxLibInfo
 
 
 def get_homepath():
-    return str(Path.home())+'/.kpclibdb'
+    config_file = str(Path.home())+'/.kpclibdb/kpclibpy.ini'
+
+    if path.exists(config_file):
+        config = configparser.ConfigParser()
+        config.read(config_file)
+        return config['DEFAULT']['homepath']
+    else:
+        return str(Path.home())+'/.kpclibdb'
 
 
 def lsdb():
+    import fnmatch
     home_path = get_homepath()
-    onlyfiles = [f for f in listdir(home_path) if isfile(join(home_path, f))]
-    return onlyfiles
+    files = fnmatch.filter(listdir(home_path), "*.kdbx") + fnmatch.filter(listdir(home_path), "*.xyz")
+    #onlyfiles = [f for f in listdir(home_path) if isfile(join(home_path, f))]
+    return files
 
 
 class KeePass:

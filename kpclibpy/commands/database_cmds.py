@@ -225,6 +225,7 @@ def show(items):
     elif items == "version":
         version()
     elif items == "databases":
+        print("The current path: ", get_homepath())
         db_table = PrettyTable(["No.", "Name"])
         db_table.align = "l"
         num = 1
