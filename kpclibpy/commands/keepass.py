@@ -325,6 +325,21 @@ class KeePass:
         else:
             print("Database connection is not established yet.")
 
+    def connect(self, filename, password):
+        """
+        This command is used to connect a database.
+        connect supports device lock.
+        """
+        self._db = PxDatabase()
+        try:
+            self._db.DefaultFolder = get_homepath()
+            self._db.Open(filename, password)
+        except InvalidCompositeKeyException:
+            self.close()
+            self._db = None
+            cprint("open: The composite key is invalid!", "red")
+            return
+
     def open(self, db_path, password, logger):
         ioc = IOConnectionInfo.FromPath(db_path)
         cmpKey = CompositeKey()

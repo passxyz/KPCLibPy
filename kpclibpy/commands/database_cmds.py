@@ -257,9 +257,10 @@ def open(dbfile: str, password = ""):
         cprint("Database name: {}\nDescription: {}\nMaintenanceHistoryDays:{}"
             .format(db.Name, db.Description, db.MaintenanceHistoryDays))
     else:
-        logger = KPCLibPyLogger()
-        db_path = get_homepath() + '/' + dbfile
-        ctx.keepass.open(db_path, password, logger)
+        #logger = KPCLibPyLogger()
+        #db_path = get_homepath() + '/' + dbfile
+        #ctx.keepass.open(db_path, password, logger)
+        ctx.keepass.connect(dbfile, password)
     
     ctx.keepass.file_name = dbfile
 
