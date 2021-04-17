@@ -69,6 +69,14 @@ A Dockr image -
 `docker-mono <https://github.com/shugaoye/docker-mono>`__ can be used on
 Linux or Windows 10 (WSL).
 
+Configuration
+-------------
+
+The default location for database files is at $HOME/.kpclibdb (or %USERPROFILE%\.kpclibdb on Windows). To change the default location, a configuration file kpclibpy.ini can be created in the folder $HOME/.kpclibdb.
+::
+	[DEFAULT]
+	homepath = {your data path}
+
 Issues
 ------
 On Windows platform, you may get the below error message:

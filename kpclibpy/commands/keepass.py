@@ -332,12 +332,13 @@ class KeePass:
         """
         self._db = PxDatabase()
         try:
-            self._db.DefaultFolder = get_homepath()
+            homepath = get_homepath()
+            self._db.DefaultFolder = homepath
             self._db.Open(filename, password)
         except InvalidCompositeKeyException:
+            cprint("connect: The composite key is invalid!\npath={}, file={}".format(homepath, filename), "red")
             self.close()
             self._db = None
-            cprint("open: The composite key is invalid!", "red")
             return
 
     def open(self, db_path, password, logger):
