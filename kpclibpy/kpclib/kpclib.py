@@ -31,6 +31,7 @@ def interop_dll_path(dll_name):
 clr.AddReference(interop_dll_path('KPCLib.dll'))
 clr.AddReference(interop_dll_path('SkiaSharp.dll'))
 clr.AddReference(interop_dll_path('PassXYZLib.dll'))
+clr.AddReference(interop_dll_path('PassXYZ.dll'))
 
 if __name__ == '__main__':
 	from KeePassLib import PwDatabase, PwGroup

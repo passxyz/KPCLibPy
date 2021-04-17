@@ -24,7 +24,11 @@ from KeePassLib.Keys import CompositeKey, KcpPassword, InvalidCompositeKeyExcept
 from KeePassLib.Security import ProtectedString
 from KeePassLib.Serialization import IOConnectionInfo
 from PassXYZLib import PxDefs, PxDatabase, PxLibInfo
+from PassXYZ.Services import PxKeyProvider
 
+
+def get_username(filename):
+    return PxDefs.GetUserNameFromDataFile(filename)
 
 def get_homepath():
     config_file = str(Path.home())+'/.kpclibdb/kpclibpy.ini'
@@ -70,6 +74,14 @@ class KeePass:
         self._file_name = None
         self._user_name = None
         self.is_hidden = True
+
+    @property
+    def version1(self):
+        """
+        ReadOnly property to represent the version of PassXYZ
+        """
+        return PxKeyProvider.Version
+
 
     @property
     def version(self):
@@ -335,8 +347,8 @@ class KeePass:
             homepath = get_homepath()
             self._db.DefaultFolder = homepath
             self._db.Open(filename, password)
-        except InvalidCompositeKeyException:
-            cprint("connect: The composite key is invalid!\npath={}, file={}".format(homepath, filename), "red")
+        except InvalidCompositeKeyException as ex:
+            cprint("connect: The composite key is invalid!\npath={}, file={}\n{}".format(homepath, filename, ex), "red")
             self.close()
             self._db = None
             return

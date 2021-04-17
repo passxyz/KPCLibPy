@@ -11,7 +11,7 @@ import typing
 from prettytable import PrettyTable
 from termcolor import cprint, colored
 from nubia import command, argument, context
-from kpclibpy.commands.keepass import IStatusLogger, get_homepath, lsdb
+from kpclibpy.commands.keepass import IStatusLogger, get_homepath, lsdb, get_username
 #from KeePassLib import PwGroup, PwEntry, Collections
 
 
@@ -164,6 +164,7 @@ def version():
     ctx = context.get_context()
     en_table.add_row([colored("KPCLibPy", "yellow"), ctx.version])
     en_table.add_row([colored("KPCLib", "yellow"), "{}".format(ctx.keepass.version)])
+    en_table.add_row([colored("PassXYZ", "yellow"), "{}".format(ctx.keepass.version1)])
 
     if ctx.keepass.is_open():
         en_table.add_row([colored("CurrentGroup", "yellow"), "{}".format(ctx.keepass.current_group)])
@@ -226,11 +227,11 @@ def show(items):
         version()
     elif items == "databases":
         print("The current path: ", get_homepath())
-        db_table = PrettyTable(["No.", "Name"])
+        db_table = PrettyTable(["No.", "Username", "File Name"])
         db_table.align = "l"
         num = 1
         for file in lsdb():
-            db_table.add_row([num, file])
+            db_table.add_row([num, get_username(file), file])
             num = num + 1
         print(db_table)
     elif items == "help":
