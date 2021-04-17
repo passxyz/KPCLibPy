@@ -33,5 +33,5 @@ try:
     __email__ = metadata["author-email"]
     __license__ = metadata["license"]
 except ModuleNotFoundError:
-    __version__ = "1.1.5.dev0"
+    __version__ = "1.1.6.dev0"
     print("Debug build ", __version__)
