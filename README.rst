@@ -73,7 +73,8 @@ Configuration
 -------------
 
 The default location for database files is at $HOME/.kpclibdb (or %USERPROFILE%\.kpclibdb on Windows). To change the default location, a configuration file kpclibpy.ini can be created in the folder $HOME/.kpclibdb.
-::
+.. code::
+
 	[DEFAULT]
 	homepath = {your data path}
 
