@@ -47,6 +47,30 @@ def edit(path, key="Notes", value="", protected=False):
         else:
             print("cannot access {}: No such file or directory".format(path))
     
+@command
+@argument("path", description="entry path", positional=True)
+@argument("url", description="OTP Url")
+def update_url(path, url=""):
+    "Update OTP Url in the entry."
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        entry = ctx.keepass.find_entry_by_path(path)
+        if entry:
+            if url:
+                ctx.keepass.update_otp_url(entry, url)
+                print("Token: {}, Progress: {}".format(entry.get_Token(), entry.get_Progress()))
+
+
+@command
+@argument("path", description="entry path", positional=True)
+def get_token(path):
+    "get OTP token in the entry."
+    ctx = context.get_context()
+    if ctx.keepass.is_open():
+        entry = ctx.keepass.find_entry_by_path(path)
+        if entry:
+            print("Token: {}, Progress: {}".format(entry.get_Token(), entry.get_Progress()))
+
 
 @command
 @argument("title", description="enter a title")
