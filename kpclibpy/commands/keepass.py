@@ -272,6 +272,15 @@ class KeePass:
             entry.Strings.Set(key, ProtectedString(protected, value))
 
 
+    def update_otp_url(self, entry, url):
+        """
+        Update OTP Url
+        entry  - Entry to be updated
+        url    - OTP Url
+        """
+        entry.UpdateOtpUrl(url)
+
+
     def get_groups(self, name):
         """
         Get a dictionary of groups in the sub-group of current group
